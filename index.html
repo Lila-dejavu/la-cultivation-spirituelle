@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>靈修之路 - La Cultivation Spirituelle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 載入畫面 / Loading Screen -->
+    <div id="loading-screen" class="screen">
+        <div class="loading-content">
+            <h1 class="game-title">靈修之路</h1>
+            <p class="game-subtitle">La Cultivation Spirituelle</p>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loading-progress"></div>
+            </div>
+            <p class="loading-text">載入中...</p>
+        </div>
+    </div>
+
+    <!-- 主選單 / Main Menu -->
+    <div id="main-menu" class="screen hidden">
+        <div class="menu-background">
+            <div class="spiritual-particles"></div>
+        </div>
+        <div class="menu-content">
+            <h1 class="game-title glow">靈修之路</h1>
+            <p class="game-subtitle">La Cultivation Spirituelle</p>
+            <div class="menu-buttons">
+                <button class="menu-btn primary" id="btn-new-game">開始修煉</button>
+                <button class="menu-btn" id="btn-continue">繼續遊戲</button>
+                <button class="menu-btn" id="btn-settings">設定</button>
+                <button class="menu-btn" id="btn-about">關於</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 角色創建 / Character Creation -->
+    <div id="character-creation" class="screen hidden">
+        <div class="creation-container">
+            <h2 class="section-title">創建角色</h2>
+            
+            <div class="creation-step" id="step-name">
+                <h3>道號</h3>
+                <input type="text" id="character-name" class="input-field" placeholder="請輸入您的道號" value="林逸">
+            </div>
+
+            <div class="creation-step" id="step-spiritual-root">
+                <h3>靈根選擇</h3>
+                <div class="root-options">
+                    <div class="root-option" data-root="single-sword">
+                        <div class="root-icon">⚔️</div>
+                        <h4>劍靈根</h4>
+                        <p class="root-quality">單靈根 - 上品</p>
+                        <p class="root-desc">修煉速度: 3.0x<br>專精劍道，攻擊力強</p>
+                    </div>
+                    <div class="root-option" data-root="single-fire">
+                        <div class="root-icon">🔥</div>
+                        <h4>火靈根</h4>
+                        <p class="root-quality">單靈根 - 上品</p>
+                        <p class="root-desc">修煉速度: 3.0x<br>專精火系法術，爆發強</p>
+                    </div>
+                    <div class="root-option" data-root="mutant-thunder">
+                        <div class="root-icon">⚡</div>
+                        <h4>雷靈根</h4>
+                        <p class="root-quality">變異靈根 - 天品</p>
+                        <p class="root-desc">修煉速度: 3.0x<br>攻守兼備，速度極快</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="creation-step" id="step-destiny">
+                <h3>命格選擇</h3>
+                <div class="destiny-options">
+                    <div class="destiny-option selected" data-destiny="protagonist">
+                        <h4>🌟 主角命格</h4>
+                        <p>命運值: 80<br>逢凶化吉，機緣不斷</p>
+                    </div>
+                    <div class="destiny-option" data-destiny="genius">
+                        <h4>✨ 天才命格</h4>
+                        <p>命運值: 60<br>修煉天賦異稟</p>
+                    </div>
+                    <div class="destiny-option" data-destiny="ordinary">
+                        <h4>📜 普通命格</h4>
+                        <p>命運值: 40<br>平凡但穩定</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="creation-buttons">
+                <button class="btn secondary" id="btn-back-to-menu">返回</button>
+                <button class="btn primary" id="btn-confirm-character">確認創建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 遊戲主介面 / Game Interface -->
+    <div id="game-interface" class="screen hidden">
+        <!-- HUD 頭部顯示 -->
+        <div class="hud-top">
+            <div class="character-info">
+                <div class="character-avatar">
+                    <div class="avatar-frame">🧙</div>
+                </div>
+                <div class="character-stats">
+                    <h3 id="hud-character-name">林逸</h3>
+                    <p class="realm-display" id="hud-realm">凝氣期 初期</p>
+                    <div class="stat-bar health-bar">
+                        <div class="stat-bar-fill" id="health-bar" style="width: 100%"></div>
+                        <span class="stat-text" id="health-text">1000/1000</span>
+                    </div>
+                    <div class="stat-bar mana-bar">
+                        <div class="stat-bar-fill" id="mana-bar" style="width: 100%"></div>
+                        <span class="stat-text" id="mana-text">500/500</span>
+                    </div>
+                    <div class="stat-bar exp-bar">
+                        <div class="stat-bar-fill" id="exp-bar" style="width: 0%"></div>
+                        <span class="stat-text" id="exp-text">0/100</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="resources">
+                <div class="resource-item">
+                    <span class="resource-icon">💎</span>
+                    <span id="spirit-stones">100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要內容區 -->
+        <div class="game-content">
+            <!-- 側邊欄選單 -->
+            <div class="sidebar">
+                <button class="sidebar-btn active" data-panel="cultivation" title="修煉">
+                    <span class="btn-icon">🧘</span>
+                    <span class="btn-label">修煉</span>
+                </button>
+                <button class="sidebar-btn" data-panel="character" title="角色">
+                    <span class="btn-icon">👤</span>
+                    <span class="btn-label">角色</span>
+                </button>
+                <button class="sidebar-btn" data-panel="inventory" title="背包">
+                    <span class="btn-icon">🎒</span>
+                    <span class="btn-label">背包</span>
+                </button>
+                <button class="sidebar-btn" data-panel="skills" title="技能">
+                    <span class="btn-icon">📖</span>
+                    <span class="btn-label">技能</span>
+                </button>
+                <button class="sidebar-btn" data-panel="battle" title="戰鬥">
+                    <span class="btn-icon">⚔️</span>
+                    <span class="btn-label">戰鬥</span>
+                </button>
+            </div>
+
+            <!-- 面板容器 -->
+            <div class="panel-container">
+                <!-- 修煉面板 -->
+                <div id="cultivation-panel" class="panel active">
+                    <!-- 由 cultivation-interface.js 填充 -->
+                </div>
+
+                <!-- 角色面板 -->
+                <div id="character-panel" class="panel">
+                    <!-- 由 character-panel.js 填充 -->
+                </div>
+
+                <!-- 背包面板 -->
+                <div id="inventory-panel" class="panel">
+                    <!-- 由 inventory-interface.js 填充 -->
+                </div>
+
+                <!-- 技能面板 -->
+                <div id="skills-panel" class="panel">
+                    <!-- 由 skill-interface.js 填充 -->
+                </div>
+
+                <!-- 戰鬥面板 -->
+                <div id="battle-panel" class="panel">
+                    <!-- 由 battle-interface.js 填充 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知系統 -->
+        <div id="notification-container"></div>
+    </div>
+
+    <!-- 對話框容器 -->
+    <div id="dialog-overlay" class="hidden">
+        <div class="dialog-box">
+            <div class="dialog-header">
+                <h3 id="dialog-title">提示</h3>
+                <button class="dialog-close" id="dialog-close">×</button>
+            </div>
+            <div class="dialog-content" id="dialog-content">
+                <!-- 動態內容 -->
+            </div>
+            <div class="dialog-buttons" id="dialog-buttons">
+                <button class="btn secondary" id="dialog-cancel">取消</button>
+                <button class="btn primary" id="dialog-confirm">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 模組 -->
+    <script type="module" src="game.js"></script>
+</body>
+</html>
