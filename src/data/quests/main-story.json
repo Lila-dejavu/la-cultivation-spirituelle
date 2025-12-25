@@ -1,0 +1,35 @@
+{
+  "chapters": [
+    {
+      "id": "chapter_1",
+      "name": "初入修仙界",
+      "name_en": "Enter the Cultivation World",
+      "quests": [
+        {
+          "id": "quest_1_1",
+          "name": "覺醒靈根",
+          "name_en": "Awaken Spiritual Root",
+          "objectives": [
+            {
+              "id": "obj_1",
+              "type": "talk",
+              "target": "elder_zhang",
+              "description": "與張長老對話"
+            },
+            {
+              "id": "obj_2",
+              "type": "test",
+              "description": "進行靈根測試"
+            }
+          ],
+          "rewards": {
+            "exp": 100,
+            "items": [
+              {"id": "basic_cultivation_manual", "quantity": 1}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "sects": [
+    {
+      "id": "heavenly_sword_sect",
+      "name": "天劍宗",
+      "name_en": "Heavenly Sword Sect",
+      "type": "righteous",
+      "rank": "major",
+      "territory": ["sword_peak", "cloud_valley"],
+      "specialties": ["sword_cultivation", "formation_arrays"],
+      "techniques": [
+        {"id": "heavenly_sword_art", "name": "天劍訣"},
+        {"id": "cloud_step", "name": "雲遊步"}
+      ],
+      "history": "建立於三千年前，以劍道聞名天下",
+      "currentLeader": "劍尊 - 雲天行"
+    },
+    {
+      "id": "pill_king_valley",
+      "name": "丹王谷",
+      "name_en": "Pill King Valley",
+      "type": "neutral",
+      "rank": "medium",
+      "territory": ["medicine_garden", "alchemy_peak"],
+      "specialties": ["alchemy", "herb_cultivation"],
+      "techniques": [
+        {"id": "pill_king_formula", "name": "丹王訣"},
+        {"id": "herb_mastery", "name": "御草術"}
+      ],
+      "history": "專注於煉丹術的宗門",
+      "currentLeader": "丹聖 - 藥無憂"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "weapons": [
+    {
+      "id": "iron_sword",
+      "name": "凡鐵劍",
+      "name_en": "Iron Sword",
+      "grade": "mortal",
+      "type": "sword",
+      "level": 1,
+      "attributes": {
+        "attack": 50,
+        "speed": 5
+      },
+      "requirements": {
+        "level": 1
+      }
+    },
+    {
+      "id": "flying_rainbow_sword",
+      "name": "飛虹劍",
+      "name_en": "Flying Rainbow Sword",
+      "grade": "treasure",
+      "type": "sword",
+      "level": 50,
+      "attributes": {
+        "attack": 500,
+        "speed": 50,
+        "spiritualPower": 100
+      },
+      "specialEffects": [
+        {"id": "rainbow_slash", "name": "虹光斬", "damage": 200}
+      ],
+      "requirements": {
+        "level": 50,
+        "realm": "golden_core"
+      }
+    }
+  ]
+}

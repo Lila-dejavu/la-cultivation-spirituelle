@@ -1,0 +1,30 @@
+{
+  "protagonists": [
+    {
+      "id": "main_character",
+      "name": "林逸",
+      "name_en": "Lin Yi",
+      "age": 18,
+      "gender": "male",
+      "spiritualRoot": {
+        "type": "single",
+        "element": "sword",
+        "quality": 5
+      },
+      "destiny": "protagonist",
+      "cultivation": {
+        "realm": "qi_condensation",
+        "stage": "early",
+        "spiritualPower": 0
+      },
+      "attributes": {
+        "health": 1000,
+        "mana": 500,
+        "attack": 50,
+        "defense": 40,
+        "speed": 30
+      },
+      "backstory": "出身凡人家庭，偶然獲得上古傳承"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "beasts": [
+    {
+      "id": "spirit_wolf",
+      "name": "靈狼",
+      "name_en": "Spirit Wolf",
+      "level": 5,
+      "type": "beast",
+      "attributes": {
+        "health": 500,
+        "attack": 40,
+        "defense": 30,
+        "speed": 50
+      },
+      "skills": ["bite", "pounce"],
+      "drops": [
+        {"id": "wolf_fang", "chance": 0.3},
+        {"id": "spirit_stone_low", "chance": 0.5, "quantity": [1, 3]}
+      ]
+    },
+    {
+      "id": "flame_tiger",
+      "name": "烈焰虎",
+      "name_en": "Flame Tiger",
+      "level": 50,
+      "type": "beast",
+      "element": "fire",
+      "attributes": {
+        "health": 5000,
+        "attack": 400,
+        "defense": 300,
+        "speed": 200
+      },
+      "skills": ["flame_breath", "claw_strike", "roar"],
+      "drops": [
+        {"id": "tiger_core", "chance": 0.1},
+        {"id": "flame_essence", "chance": 0.3}
+      ]
+    }
+  ]
+}
