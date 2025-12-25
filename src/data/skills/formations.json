@@ -1,0 +1,40 @@
+{
+  "formations": [
+    {
+      "id": "five_elements_defense",
+      "name": "五行防禦陣",
+      "name_en": "Five Elements Defense Formation",
+      "type": "defensive",
+      "rank": 2,
+      "positions": 5,
+      "effects": {
+        "defenseBonus": 50,
+        "resistanceBonus": 30,
+        "sharedDamage": true
+      },
+      "requirements": {
+        "minRealm": "foundation",
+        "minPlayers": 5
+      },
+      "description": "運用五行相生之理，形成堅固防禦"
+    },
+    {
+      "id": "sword_array",
+      "name": "天劍陣",
+      "name_en": "Heavenly Sword Array",
+      "type": "offensive",
+      "rank": 3,
+      "positions": 7,
+      "effects": {
+        "attackBonus": 80,
+        "criticalChance": 20,
+        "swordIntent": true
+      },
+      "requirements": {
+        "minRealm": "golden_core",
+        "minPlayers": 7
+      },
+      "description": "以劍意為引，布下殺陣"
+    }
+  ]
+}

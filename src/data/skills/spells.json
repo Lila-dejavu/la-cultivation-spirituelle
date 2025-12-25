@@ -1,0 +1,65 @@
+{
+  "spells": [
+    {
+      "id": "fireball",
+      "name": "火球術",
+      "name_en": "Fireball",
+      "element": "fire",
+      "rank": 1,
+      "type": "offensive",
+      "manaCost": 30,
+      "castTime": 1,
+      "cooldown": 3,
+      "effects": {
+        "damage": 100,
+        "damageType": "fire"
+      },
+      "requirements": {
+        "level": 5,
+        "realm": "qi_condensation"
+      },
+      "description": "凝聚靈火，化為火球攻擊敵人"
+    },
+    {
+      "id": "water_shield",
+      "name": "水盾術",
+      "name_en": "Water Shield",
+      "element": "water",
+      "rank": 1,
+      "type": "defensive",
+      "manaCost": 40,
+      "castTime": 0.5,
+      "cooldown": 10,
+      "effects": {
+        "shield": 200,
+        "duration": 10
+      },
+      "requirements": {
+        "level": 8,
+        "realm": "qi_condensation"
+      },
+      "description": "凝聚水系靈力形成護盾"
+    },
+    {
+      "id": "sword_rain",
+      "name": "萬劍訣",
+      "name_en": "Sword Rain",
+      "element": "metal",
+      "rank": 3,
+      "type": "offensive",
+      "manaCost": 200,
+      "castTime": 2,
+      "cooldown": 15,
+      "effects": {
+        "damage": 600,
+        "aoe": true,
+        "radius": 10
+      },
+      "requirements": {
+        "level": 80,
+        "realm": "golden_core"
+      },
+      "description": "召喚無數靈劍從天而降"
+    }
+  ]
+}

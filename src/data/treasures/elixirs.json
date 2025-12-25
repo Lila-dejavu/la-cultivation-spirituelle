@@ -1,0 +1,29 @@
+{
+  "elixirs": [
+    {
+      "id": "healing_pill_low",
+      "name": "回春丹（下品）",
+      "name_en": "Healing Pill (Low)",
+      "type": "healing",
+      "grade": "low",
+      "effects": {
+        "healing": 500
+      },
+      "toxicity": 5,
+      "duration": 0
+    },
+    {
+      "id": "breakthrough_pill_middle",
+      "name": "破境丹（中品）",
+      "name_en": "Breakthrough Pill (Middle)",
+      "type": "breakthrough",
+      "grade": "middle",
+      "effects": {
+        "breakthroughBonus": 0.2
+      },
+      "toxicity": 15,
+      "duration": 0,
+      "description": "提升20%突破成功率"
+    }
+  ]
+}

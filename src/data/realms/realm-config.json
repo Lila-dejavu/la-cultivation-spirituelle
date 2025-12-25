@@ -1,0 +1,101 @@
+{
+  "realms": [
+    {
+      "id": "qi_condensation",
+      "name": "凝氣期",
+      "name_en": "Qi Condensation",
+      "tier": 1,
+      "levels": {
+        "min": 1,
+        "max": 40
+      },
+      "stages": ["early", "middle", "late", "peak"],
+      "breakthrough": {
+        "spiritualPowerRequired": 1000,
+        "comprehensionRequired": 100,
+        "successRate": 0.8,
+        "tribulation": false
+      },
+      "attributes": {
+        "health": 1000,
+        "spiritualPower": 500,
+        "attack": 50,
+        "defense": 40,
+        "speed": 30
+      }
+    },
+    {
+      "id": "foundation",
+      "name": "築基期",
+      "name_en": "Foundation Establishment",
+      "tier": 2,
+      "levels": {
+        "min": 41,
+        "max": 80
+      },
+      "stages": ["early", "middle", "late", "peak"],
+      "breakthrough": {
+        "spiritualPowerRequired": 5000,
+        "comprehensionRequired": 500,
+        "successRate": 0.6,
+        "tribulation": false
+      },
+      "attributes": {
+        "health": 2500,
+        "spiritualPower": 1500,
+        "attack": 120,
+        "defense": 100,
+        "speed": 70
+      }
+    },
+    {
+      "id": "golden_core",
+      "name": "金丹期",
+      "name_en": "Golden Core",
+      "tier": 3,
+      "levels": {
+        "min": 81,
+        "max": 120
+      },
+      "stages": ["early", "middle", "late", "peak"],
+      "breakthrough": {
+        "spiritualPowerRequired": 20000,
+        "comprehensionRequired": 2000,
+        "successRate": 0.4,
+        "tribulation": false
+      },
+      "attributes": {
+        "health": 6000,
+        "spiritualPower": 4000,
+        "attack": 300,
+        "defense": 250,
+        "speed": 150
+      }
+    },
+    {
+      "id": "nascent_soul",
+      "name": "元嬰期",
+      "name_en": "Nascent Soul",
+      "tier": 4,
+      "levels": {
+        "min": 121,
+        "max": 160
+      },
+      "stages": ["early", "middle", "late", "peak"],
+      "breakthrough": {
+        "spiritualPowerRequired": 100000,
+        "comprehensionRequired": 10000,
+        "successRate": 0.2,
+        "tribulation": true,
+        "tribulationWaves": 3
+      },
+      "attributes": {
+        "health": 15000,
+        "spiritualPower": 12000,
+        "attack": 800,
+        "defense": 600,
+        "speed": 350
+      }
+    }
+  ]
+}
