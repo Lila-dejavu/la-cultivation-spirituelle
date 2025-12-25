@@ -1,0 +1,779 @@
+/**
+ * 靈修之路 - 樣式表
+ * La Cultivation Spirituelle - Stylesheet
+ * 修仙古風主題設計 / Cultivation-themed design
+ */
+
+/* ========== 全局設定 / Global Settings ========== */
+:root {
+    /* 主色調 - 深色系 */
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #141824;
+    --bg-tertiary: #1a1f2e;
+    --bg-elevated: #20253a;
+    
+    /* 靈氣色系 - 青色 */
+    --spirit-primary: #4fd1c5;
+    --spirit-secondary: #38b2ac;
+    --spirit-glow: rgba(79, 209, 197, 0.4);
+    
+    /* 金色點綴 */
+    --gold-primary: #fbbf24;
+    --gold-secondary: #f59e0b;
+    --gold-glow: rgba(251, 191, 36, 0.3);
+    
+    /* 文字顏色 */
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --text-dim: #6b7280;
+    
+    /* 五行顏色 */
+    --element-metal: #c0c0c0;
+    --element-wood: #22c55e;
+    --element-water: #3b82f6;
+    --element-fire: #ef4444;
+    --element-earth: #a16207;
+    
+    /* 狀態顏色 */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    
+    /* 間距 */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* 圓角 */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    
+    /* 陰影 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px var(--spirit-glow);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'Noto Sans TC', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* ========== 畫面切換 / Screen Management ========== */
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    transition: opacity 0.5s ease;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ========== 載入畫面 / Loading Screen ========== */
+#loading-screen {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.game-title {
+    font-size: 4rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, var(--gold-primary), var(--spirit-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-md);
+}
+
+.game-subtitle {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.loading-bar {
+    width: 300px;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: 0 auto var(--spacing-md);
+    border: 1px solid var(--spirit-primary);
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--spirit-primary), var(--spirit-secondary));
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px var(--spirit-glow);
+}
+
+.loading-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ========== 主選單 / Main Menu ========== */
+#main-menu {
+    background: linear-gradient(135deg, #0a0e1a 0%, #141824 50%, #1a1f2e 100%);
+}
+
+.menu-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.spiritual-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, var(--spirit-primary), transparent),
+        radial-gradient(2px 2px at 60% 70%, var(--spirit-secondary), transparent),
+        radial-gradient(1px 1px at 50% 50%, var(--gold-primary), transparent),
+        radial-gradient(2px 2px at 80% 10%, var(--spirit-primary), transparent);
+    background-size: 200% 200%;
+    animation: particles-float 20s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+@keyframes particles-float {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+}
+
+.menu-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    z-index: 1;
+}
+
+.glow {
+    text-shadow: 0 0 30px var(--spirit-glow);
+    animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+    0%, 100% { text-shadow: 0 0 30px var(--spirit-glow); }
+    50% { text-shadow: 0 0 50px var(--spirit-glow), 0 0 80px var(--spirit-glow); }
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.menu-btn {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 250px;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--spirit-glow), transparent);
+    transition: left 0.5s ease;
+}
+
+.menu-btn:hover::before {
+    left: 100%;
+}
+
+.menu-btn:hover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 20px var(--spirit-glow);
+    transform: translateY(-2px);
+}
+
+.menu-btn.primary {
+    background: linear-gradient(135deg, var(--spirit-secondary), var(--spirit-primary));
+    border-color: var(--gold-primary);
+    font-weight: bold;
+}
+
+/* ========== 按鈕通用樣式 / Button Styles ========== */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 1rem;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, var(--spirit-secondary), var(--spirit-primary));
+    border-color: var(--gold-primary);
+    font-weight: bold;
+}
+
+.btn.secondary {
+    background: var(--bg-elevated);
+    border-color: var(--text-dim);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========== 角色創建 / Character Creation ========== */
+#character-creation {
+    background: var(--bg-secondary);
+    overflow-y: auto;
+    padding: var(--spacing-xl);
+}
+
+.creation-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--spirit-primary);
+}
+
+.section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--gold-primary);
+}
+
+.creation-step {
+    margin-bottom: var(--spacing-xl);
+}
+
+.creation-step h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--spirit-primary);
+}
+
+.input-field {
+    width: 100%;
+    padding: var(--spacing-md);
+    font-size: 1.125rem;
+    background: var(--bg-secondary);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+.root-options, .destiny-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.root-option, .destiny-option {
+    padding: var(--spacing-lg);
+    background: var(--bg-elevated);
+    border: 2px solid var(--text-dim);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.root-option:hover, .destiny-option:hover {
+    border-color: var(--spirit-primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+.root-option.selected, .destiny-option.selected {
+    border-color: var(--gold-primary);
+    background: var(--bg-tertiary);
+    box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.root-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.root-quality {
+    color: var(--gold-primary);
+    font-weight: bold;
+    margin: var(--spacing-sm) 0;
+}
+
+.root-desc {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.creation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-xl);
+}
+
+/* ========== 遊戲主介面 / Game Interface ========== */
+#game-interface {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+/* HUD 頂部 */
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--spirit-primary);
+}
+
+.character-info {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.character-avatar {
+    width: 80px;
+    height: 80px;
+}
+
+.avatar-frame {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: var(--bg-tertiary);
+    border: 3px solid var(--gold-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.character-stats {
+    min-width: 300px;
+}
+
+.character-stats h3 {
+    font-size: 1.25rem;
+    color: var(--gold-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.realm-display {
+    color: var(--spirit-primary);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.stat-bar {
+    position: relative;
+    height: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-xs);
+    overflow: hidden;
+    border: 1px solid var(--text-dim);
+}
+
+.stat-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: var(--radius-sm);
+}
+
+.health-bar .stat-bar-fill {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.mana-bar .stat-bar-fill {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.exp-bar .stat-bar-fill {
+    background: linear-gradient(90deg, var(--gold-secondary), var(--gold-primary));
+}
+
+.stat-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.resources {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: center;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gold-primary);
+}
+
+.resource-icon {
+    font-size: 1.5rem;
+}
+
+/* 主內容區 */
+.game-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* 側邊欄 */
+.sidebar {
+    width: 80px;
+    background: var(--bg-secondary);
+    border-right: 2px solid var(--spirit-primary);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md) var(--spacing-xs);
+    gap: var(--spacing-sm);
+}
+
+.sidebar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-xs);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--text-dim);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.sidebar-btn:hover {
+    border-color: var(--spirit-primary);
+    background: var(--bg-elevated);
+    transform: scale(1.05);
+}
+
+.sidebar-btn.active {
+    border-color: var(--gold-primary);
+    background: var(--bg-elevated);
+    color: var(--gold-primary);
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.btn-label {
+    font-size: 0.75rem;
+}
+
+/* 面板容器 */
+.panel-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    background: var(--bg-primary);
+}
+
+.panel {
+    display: none;
+    animation: panel-fade-in 0.3s ease;
+}
+
+.panel.active {
+    display: block;
+}
+
+@keyframes panel-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== 面板通用樣式 / Panel Common Styles ========== */
+.panel-section {
+    background: var(--bg-secondary);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.panel-title {
+    font-size: 1.5rem;
+    color: var(--gold-primary);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--spirit-primary);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.info-label {
+    color: var(--text-secondary);
+}
+
+.info-value {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+/* ========== 通知系統 / Notification System ========== */
+#notification-container {
+    position: fixed;
+    top: 100px;
+    right: var(--spacing-lg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.notification {
+    padding: var(--spacing-md);
+    background: var(--bg-elevated);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 300px;
+    animation: notification-slide-in 0.3s ease;
+}
+
+@keyframes notification-slide-in {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification.success {
+    border-color: var(--success);
+}
+
+.notification.warning {
+    border-color: var(--warning);
+}
+
+.notification.error {
+    border-color: var(--danger);
+}
+
+/* ========== 對話框 / Dialog ========== */
+#dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: opacity 0.3s ease;
+}
+
+#dialog-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dialog-box {
+    background: var(--bg-secondary);
+    border: 3px solid var(--gold-primary);
+    border-radius: var(--radius-lg);
+    min-width: 400px;
+    max-width: 600px;
+    box-shadow: 0 0 50px var(--gold-glow);
+    animation: dialog-pop 0.3s ease;
+}
+
+@keyframes dialog-pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 2px solid var(--spirit-primary);
+}
+
+.dialog-header h3 {
+    color: var(--gold-primary);
+    font-size: 1.25rem;
+}
+
+.dialog-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.dialog-close:hover {
+    color: var(--danger);
+}
+
+.dialog-content {
+    padding: var(--spacing-lg);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 2px solid var(--spirit-primary);
+}
+
+/* ========== 響應式設計 / Responsive Design ========== */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+    
+    .menu-btn {
+        min-width: 200px;
+        font-size: 1rem;
+    }
+    
+    .sidebar {
+        width: 60px;
+    }
+    
+    .btn-label {
+        display: none;
+    }
+    
+    .character-stats {
+        min-width: 200px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== 滾動條樣式 / Scrollbar ========== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--spirit-primary);
+    border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-primary);
+}
