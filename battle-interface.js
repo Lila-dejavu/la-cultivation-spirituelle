@@ -1151,7 +1151,10 @@ export class BattleInterface {
      */
     selectUnitFromList(unitId) {
         const unit = this.playerUnits.find(u => u.id === unitId);
-        if (!unit || unit.hp <= 0 || unit.hasActed) return;
+        if (!unit || unit.hp <= 0 || unit.hasActed) {
+            // Silently return if unit cannot be selected
+            return;
+        }
         
         this.selectUnit(unit);
         
@@ -1165,14 +1168,28 @@ export class BattleInterface {
      */
     centerViewOnUnit(unit) {
         const grid = document.getElementById('battle-grid');
+        if (!grid) return;
+        
         const cell = grid.querySelector(`[data-row="${unit.row}"][data-col="${unit.col}"]`);
         
         if (cell) {
             cell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             
-            // Add flash effect
+            // Add flash effect with cleanup
             cell.classList.add('highlight-flash');
-            setTimeout(() => cell.classList.remove('highlight-flash'), 2000);
+            
+            // Store timeout for cleanup if needed
+            if (this.highlightTimeout) {
+                clearTimeout(this.highlightTimeout);
+            }
+            
+            this.highlightTimeout = setTimeout(() => {
+                // Check if cell still exists before removing class
+                if (cell && cell.classList) {
+                    cell.classList.remove('highlight-flash');
+                }
+                this.highlightTimeout = null;
+            }, 2000);
         }
     }
 
@@ -1221,6 +1238,23 @@ export class BattleInterface {
         };
         
         document.addEventListener('keydown', this.keyboardHandler);
+    }
+
+    /**
+     * Cleanup keyboard shortcuts
+     * 清理鍵盤快捷鍵
+     */
+    cleanupKeyboardShortcuts() {
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+            this.keyboardHandler = null;
+        }
+        
+        // Clear any pending highlight timeout
+        if (this.highlightTimeout) {
+            clearTimeout(this.highlightTimeout);
+            this.highlightTimeout = null;
+        }
     }
 
     /**
@@ -1432,6 +1466,9 @@ export class BattleInterface {
         this.battleState = 'victory';
         this.addBattleLog('戰鬥勝利！', 'success');
         
+        // Cleanup event listeners
+        this.cleanupKeyboardShortcuts();
+        
         // Rewards
         const expGain = 100;
         const stonesGain = 10;
@@ -1484,6 +1521,9 @@ export class BattleInterface {
     defeat() {
         this.battleState = 'defeat';
         this.addBattleLog('戰鬥失敗...', 'error');
+        
+        // Cleanup event listeners
+        this.cleanupKeyboardShortcuts();
         
         this.uiManager.showDialog({
             title: '戰鬥失敗',
