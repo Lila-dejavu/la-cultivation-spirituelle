@@ -358,6 +358,7 @@ export class BattleInterface {
         this.attackRange = [];
         this.turnCount = 1;
         this.currentPreview = null;
+        this.lastMovePosition = null; // Track position before move for cancel functionality
     }
 
     /**
@@ -440,6 +441,13 @@ export class BattleInterface {
                     </div>
                     
                     <div class="battle-sidebar">
+                        <div class="unit-list-panel">
+                            <h3>己方單位</h3>
+                            <div class="unit-list" id="unit-list">
+                                ${this.renderUnitList()}
+                            </div>
+                        </div>
+                        
                         <div class="unit-info-panel" id="unit-info">
                             ${this.renderUnitInfo()}
                         </div>
@@ -454,6 +462,9 @@ export class BattleInterface {
                 </div>
                 
                 ${this.currentPreview ? this.renderBattlePreview() : ''}
+                
+                <!-- Action menu container -->
+                <div id="battle-menu-container" class="battle-menu-container" style="display: none;"></div>
             </div>
         `;
     }
@@ -555,6 +566,35 @@ export class BattleInterface {
     }
 
     /**
+     * Render unit list
+     * 渲染單位列表
+     */
+    renderUnitList() {
+        const playerUnits = this.playerUnits.filter(u => u.hp > 0);
+        
+        return playerUnits.map(unit => {
+            const isSelected = this.selectedUnit === unit;
+            const hasActed = unit.hasActed;
+            const hpPercent = (unit.hp / unit.maxHp) * 100;
+            
+            return `
+                <div class="unit-list-item ${isSelected ? 'selected' : ''} ${hasActed ? 'acted' : ''}" 
+                     data-unit-id="${unit.id}">
+                    <div class="unit-icon">${unit.icon}</div>
+                    <div class="unit-info">
+                        <div class="unit-name">${unit.name}</div>
+                        <div class="unit-hp-bar">
+                            <div class="hp-fill" style="width: ${hpPercent}%"></div>
+                            <span class="hp-text">${unit.hp}/${unit.maxHp}</span>
+                        </div>
+                    </div>
+                    ${!hasActed ? '<div class="ready-indicator">●</div>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    /**
      * Render battle preview / 渲染戰鬥預測
      * @returns {string} HTML string
      */
@@ -633,6 +673,20 @@ export class BattleInterface {
         const cancelAttackBtn = document.getElementById('btn-cancel-attack');
         if (cancelAttackBtn) {
             cancelAttackBtn.addEventListener('click', () => this.cancelAttack());
+        }
+
+        // Unit list clicks
+        const unitListItems = document.querySelectorAll('.unit-list-item');
+        unitListItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const unitId = item.dataset.unitId;
+                this.selectUnitFromList(unitId);
+            });
+        });
+
+        // Setup keyboard shortcuts if in battle
+        if (this.battleState !== 'idle') {
+            this.setupKeyboardShortcuts();
         }
     }
 
@@ -844,18 +898,21 @@ export class BattleInterface {
      * Move unit / 移動單位
      */
     moveUnit(unit, targetRow, targetCol) {
+        // Save current position for cancel functionality
+        this.lastMovePosition = { row: unit.row, col: unit.col };
+        
         unit.row = targetRow;
         unit.col = targetCol;
         
         // Update facing based on movement
         this.showingMoveRange = false;
-        this.showingAttackRange = true;
-        
-        // Calculate attack range from new position
-        this.attackRange = this.calculateAttackRange(unit);
+        this.showingAttackRange = false;
         
         this.refreshGrid();
         this.addBattleLog(`${unit.name} 移動到 (${targetRow}, ${targetCol})`);
+        
+        // Show action menu after movement
+        this.showActionMenu(unit);
     }
 
     /**
@@ -983,6 +1040,237 @@ export class BattleInterface {
         this.currentPreview = null;
         this.render();
         this.setupEventListeners();
+    }
+
+    /**
+     * Show action menu after movement
+     * 顯示移動後的行動選單
+     */
+    showActionMenu(unit) {
+        // Calculate attack range
+        this.attackRange = this.calculateAttackRange(unit);
+        const hasEnemyInRange = this.units.some(u => 
+            !u.isPlayer && 
+            u.hp > 0 && 
+            this.attackRange.some(pos => pos.row === u.row && pos.col === u.col)
+        );
+        
+        // Create action menu
+        const menuHtml = `
+            <div class="action-menu" id="action-menu">
+                <h4>選擇行動</h4>
+                ${hasEnemyInRange ? '<button class="btn primary" id="btn-attack">⚔️ 攻擊</button>' : ''}
+                <button class="btn secondary" id="btn-wait">⏸️ 待機</button>
+                <button class="btn" id="btn-cancel-move">↩️ 取消移動</button>
+            </div>
+        `;
+        
+        // Display menu
+        const menuContainer = document.getElementById('battle-menu-container');
+        if (menuContainer) {
+            menuContainer.innerHTML = menuHtml;
+            menuContainer.style.display = 'block';
+            
+            // Bind events
+            this.bindActionMenuEvents(unit);
+        }
+    }
+
+    /**
+     * Bind action menu events
+     * 綁定行動選單事件
+     */
+    bindActionMenuEvents(unit) {
+        const attackBtn = document.getElementById('btn-attack');
+        const waitBtn = document.getElementById('btn-wait');
+        const cancelBtn = document.getElementById('btn-cancel-move');
+        
+        if (attackBtn) {
+            attackBtn.addEventListener('click', () => {
+                this.showingAttackRange = true;
+                this.hideActionMenu();
+                this.refreshGrid();
+                this.addBattleLog(`${unit.name} 準備攻擊`);
+            });
+        }
+        
+        if (waitBtn) {
+            waitBtn.addEventListener('click', () => {
+                unit.hasActed = true;
+                this.selectedUnit = null;
+                this.lastMovePosition = null;
+                this.hideActionMenu();
+                this.refreshGrid();
+                this.addBattleLog(`${unit.name} 待機`);
+            });
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.cancelLastMove(unit);
+                this.hideActionMenu();
+            });
+        }
+    }
+
+    /**
+     * Hide action menu
+     * 隱藏行動選單
+     */
+    hideActionMenu() {
+        const menuContainer = document.getElementById('battle-menu-container');
+        if (menuContainer) {
+            menuContainer.style.display = 'none';
+            menuContainer.innerHTML = '';
+        }
+    }
+
+    /**
+     * Cancel last move
+     * 取消上次移動
+     */
+    cancelLastMove(unit) {
+        if (this.lastMovePosition) {
+            unit.row = this.lastMovePosition.row;
+            unit.col = this.lastMovePosition.col;
+            this.lastMovePosition = null;
+            this.addBattleLog(`${unit.name} 取消移動`);
+        }
+        this.selectedUnit = unit;
+        this.showingMoveRange = true;
+        this.showingAttackRange = false;
+        this.moveRange = this.movementSystem.calculateMoveRange(
+            unit, this.terrain, this.units, this.terrainSystem
+        );
+        this.refreshGrid();
+    }
+
+    /**
+     * Select unit from list
+     * 從列表選擇單位
+     */
+    selectUnitFromList(unitId) {
+        const unit = this.playerUnits.find(u => u.id === unitId);
+        if (!unit || unit.hp <= 0 || unit.hasActed) {
+            // Silently return if unit cannot be selected
+            return;
+        }
+        
+        this.selectUnit(unit);
+        
+        // Center view on unit
+        this.centerViewOnUnit(unit);
+    }
+
+    /**
+     * Center view on unit
+     * 將視圖居中到單位位置
+     */
+    centerViewOnUnit(unit) {
+        const grid = document.getElementById('battle-grid');
+        if (!grid) return;
+        
+        const cell = grid.querySelector(`[data-row="${unit.row}"][data-col="${unit.col}"]`);
+        
+        if (cell) {
+            cell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            
+            // Add flash effect with cleanup
+            cell.classList.add('highlight-flash');
+            
+            // Store timeout for cleanup if needed
+            if (this.highlightTimeout) {
+                clearTimeout(this.highlightTimeout);
+            }
+            
+            this.highlightTimeout = setTimeout(() => {
+                // Check if cell still exists before removing class
+                if (cell && cell.classList) {
+                    cell.classList.remove('highlight-flash');
+                }
+                this.highlightTimeout = null;
+            }, 2000);
+        }
+    }
+
+    /**
+     * Setup keyboard shortcuts
+     * 設置鍵盤快捷鍵
+     */
+    setupKeyboardShortcuts() {
+        // Remove previous listener if exists
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+        }
+        
+        this.keyboardHandler = (e) => {
+            // Only handle when in player turn
+            if (this.battleState !== 'player_turn') return;
+            
+            // Tab: Switch to next unit
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                this.selectNextUnit();
+            }
+            
+            // Space: Center on selected unit
+            if (e.key === ' ' && this.selectedUnit) {
+                e.preventDefault();
+                this.centerViewOnUnit(this.selectedUnit);
+            }
+            
+            // Escape: Cancel selection
+            if (e.key === 'Escape') {
+                this.selectedUnit = null;
+                this.showingMoveRange = false;
+                this.showingAttackRange = false;
+                this.hideActionMenu();
+                this.refreshGrid();
+            }
+            
+            // E: End turn
+            if (e.key === 'e' || e.key === 'E') {
+                const endTurnBtn = document.getElementById('btn-end-turn');
+                if (endTurnBtn && !endTurnBtn.disabled) {
+                    endTurnBtn.click();
+                }
+            }
+        };
+        
+        document.addEventListener('keydown', this.keyboardHandler);
+    }
+
+    /**
+     * Cleanup keyboard shortcuts
+     * 清理鍵盤快捷鍵
+     */
+    cleanupKeyboardShortcuts() {
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+            this.keyboardHandler = null;
+        }
+        
+        // Clear any pending highlight timeout
+        if (this.highlightTimeout) {
+            clearTimeout(this.highlightTimeout);
+            this.highlightTimeout = null;
+        }
+    }
+
+    /**
+     * Select next available unit
+     * 選擇下一個可用單位
+     */
+    selectNextUnit() {
+        const availableUnits = this.playerUnits.filter(u => u.hp > 0 && !u.hasActed);
+        if (availableUnits.length === 0) return;
+        
+        const currentIndex = this.selectedUnit ? availableUnits.indexOf(this.selectedUnit) : -1;
+        const nextIndex = (currentIndex + 1) % availableUnits.length;
+        const nextUnit = availableUnits[nextIndex];
+        
+        this.selectUnit(nextUnit);
+        this.centerViewOnUnit(nextUnit);
     }
 
     /**
@@ -1178,6 +1466,9 @@ export class BattleInterface {
         this.battleState = 'victory';
         this.addBattleLog('戰鬥勝利！', 'success');
         
+        // Cleanup event listeners
+        this.cleanupKeyboardShortcuts();
+        
         // Rewards
         const expGain = 100;
         const stonesGain = 10;
@@ -1230,6 +1521,9 @@ export class BattleInterface {
     defeat() {
         this.battleState = 'defeat';
         this.addBattleLog('戰鬥失敗...', 'error');
+        
+        // Cleanup event listeners
+        this.cleanupKeyboardShortcuts();
         
         this.uiManager.showDialog({
             title: '戰鬥失敗',

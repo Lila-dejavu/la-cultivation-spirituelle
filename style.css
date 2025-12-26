@@ -1263,3 +1263,154 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--gold-primary);
 }
+
+/* ========== Action Menu / 行動選單 ========== */
+.battle-menu-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: none;
+}
+
+.action-menu {
+    background: var(--bg-elevated);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    min-width: 250px;
+}
+
+.action-menu h4 {
+    color: var(--gold-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.action-menu .btn {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+/* ========== Unit List Panel / 單位列表面板 ========== */
+.unit-list-panel {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--spirit-primary);
+}
+
+.unit-list-panel h3 {
+    color: var(--gold-primary);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.unit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.unit-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.unit-list-item:hover:not(.acted) {
+    border-color: var(--spirit-primary);
+    transform: translateX(4px);
+}
+
+.unit-list-item.selected {
+    border-color: var(--gold-primary);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.unit-list-item.acted {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.unit-list-item .unit-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.unit-list-item .unit-info {
+    flex: 1;
+}
+
+.unit-list-item .unit-name {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.unit-list-item .unit-hp-bar {
+    position: relative;
+    height: 8px;
+    background: var(--bg-primary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.unit-list-item .hp-fill {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, var(--spirit-primary) 100%);
+    transition: width 0.3s ease;
+}
+
+.unit-list-item .hp-text {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.unit-list-item .ready-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 12px;
+    height: 12px;
+    color: var(--success);
+    font-size: 1.5rem;
+    line-height: 0;
+    animation: pulse-green 1.5s ease-in-out infinite;
+}
+
+/* ========== Animations / 動畫 ========== */
+/* Highlight flash effect */
+@keyframes highlight-flash {
+    0%, 100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+}
+
+.highlight-flash {
+    animation: highlight-flash 0.5s ease-in-out 4;
+}
+
+/* Green pulse animation */
+@keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
