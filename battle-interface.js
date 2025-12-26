@@ -627,10 +627,60 @@ export class BattleInterface {
     }
 
     /**
+     * Show story dialog / 顯示劇情對話
+     * @param {string} title - Dialog title
+     * @param {string} content - Dialog content
+     * @param {Function} onComplete - Callback when dialog is closed
+     */
+    showStoryDialog(title, content, onComplete) {
+        this.uiManager.showDialog({
+            title: title,
+            content: content,
+            showCancel: false,
+            confirmText: '繼續',
+            onConfirm: () => {
+                if (onComplete) onComplete();
+            }
+        });
+    }
+
+    /**
      * Start battle / 開始戰鬥
      * @param {string} battleId - Battle ID
      */
     startBattle(battleId) {
+        // Show story dialog first
+        this.showStoryDialog(
+            '第一章：初入修行',
+            `
+                <div style="text-align: center; line-height: 1.8;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌲</div>
+                    <p style="color: var(--text-primary); margin-bottom: 1rem;">
+                        森林深處，靈氣繚繞...
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        ${this.character.name}踏入這片神秘的森林，突然感覺到危險的氣息。
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        前方傳來低沉的吼聲，兩隻靈狼正虎視眈眈地盯著你！
+                    </p>
+                    <p style="color: var(--gold-primary); font-weight: bold;">
+                        戰鬥不可避免...
+                    </p>
+                </div>
+            `,
+            () => {
+                // Story completed, now setup the battle
+                this.setupBattle(battleId);
+            }
+        );
+    }
+
+    /**
+     * Setup battle / 設置戰鬥
+     * @param {string} battleId - Battle ID
+     */
+    setupBattle(battleId) {
         // Generate terrain
         this.terrain = this.terrainSystem.generateTerrain(this.gridSize.rows, this.gridSize.cols);
         
@@ -901,8 +951,13 @@ export class BattleInterface {
         
         // Mark unit as acted
         attacker.hasActed = true;
+        
+        // Clear all selection state
         this.selectedUnit = null;
+        this.showingMoveRange = false;
         this.showingAttackRange = false;
+        this.moveRange = [];
+        this.attackRange = [];
         this.currentPreview = null;
         
         // Check battle end
@@ -1105,13 +1160,19 @@ export class BattleInterface {
         this.uiManager.showDialog({
             title: '戰鬥勝利！',
             content: `
-                <div style="text-align: center;">
+                <div style="text-align: center; line-height: 1.8;">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
                     <h3 style="color: var(--gold-primary);">擊敗所有敵人！</h3>
-                    <div style="margin: 2rem 0;">
-                        <p>獲得經驗：${expGain}</p>
-                        <p>獲得靈石：${stonesGain}</p>
+                    <p style="color: var(--text-secondary); margin: 1.5rem 0;">
+                        靈狼倒下，森林恢復寧靜。${this.character.name}感受到體內靈力的增長...
+                    </p>
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                        <p style="color: var(--spirit-primary);">📈 獲得經驗：${expGain}</p>
+                        <p style="color: var(--gold-primary);">💎 獲得靈石：${stonesGain}</p>
                     </div>
+                    <p style="color: var(--text-secondary); font-style: italic;">
+                        "這只是修煉之路的開始..."
+                    </p>
                 </div>
             `,
             showCancel: false,
@@ -1139,11 +1200,17 @@ export class BattleInterface {
         this.uiManager.showDialog({
             title: '戰鬥失敗',
             content: `
-                <div style="text-align: center;">
+                <div style="text-align: center; line-height: 1.8;">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">💀</div>
                     <h3 style="color: var(--danger);">全軍覆沒</h3>
-                    <p style="margin: 2rem 0; color: var(--text-secondary);">
+                    <p style="color: var(--text-secondary); margin: 1.5rem 0;">
+                        ${this.character.name}身受重傷，勉強逃離戰場...
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 1rem 0;">
                         修煉不足，需要繼續努力
+                    </p>
+                    <p style="color: var(--warning); font-style: italic; margin-top: 1.5rem;">
+                        "失敗乃成功之母，再接再厲！"
                     </p>
                 </div>
             `,

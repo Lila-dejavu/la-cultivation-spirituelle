@@ -1212,6 +1212,53 @@ body {
     .info-grid {
         grid-template-columns: 1fr;
     }
+    
+    /* 手機端戰鬥格子優化 */
+    .battle-grid {
+        grid-template-columns: repeat(15, minmax(30px, 1fr)) !important;
+        gap: 1px !important;
+        padding: 0.5rem !important;
+        max-height: 60vh !important;
+    }
+    
+    .grid-cell {
+        min-width: 30px !important;
+        min-height: 30px !important;
+    }
+    
+    .grid-unit {
+        font-size: 1.2rem !important;
+    }
+    
+    .battle-sidebar {
+        width: 100% !important;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .battle-main {
+        flex-direction: column;
+    }
+    
+    .unit-info-panel {
+        max-height: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .battle-grid {
+        grid-template-columns: repeat(15, minmax(25px, 1fr)) !important;
+        gap: 1px !important;
+    }
+    
+    .grid-cell {
+        min-width: 25px !important;
+        min-height: 25px !important;
+    }
+    
+    .grid-unit {
+        font-size: 1rem !important;
+    }
 }
 
 /* ========== 滾動條樣式 / Scrollbar ========== */
