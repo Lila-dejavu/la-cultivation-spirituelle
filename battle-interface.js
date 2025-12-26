@@ -425,7 +425,7 @@ export class BattleInterface {
                 </div>
                 
                 <div class="battle-main">
-                    <div class="battle-grid-srpg" id="battle-grid">
+                    <div class="battle-grid" id="battle-grid">
                         ${this.renderGrid()}
                     </div>
                     
@@ -464,7 +464,7 @@ export class BattleInterface {
                 const inMoveRange = this.showingMoveRange && this.moveRange.some(p => p.row === row && p.col === col);
                 const inAttackRange = this.showingAttackRange && this.attackRange.some(p => p.row === row && p.col === col);
                 
-                let cellClass = 'grid-cell-srpg';
+                let cellClass = 'grid-cell';
                 if (inMoveRange) cellClass += ' movable';
                 if (inAttackRange) cellClass += ' attackable';
                 if (unit && this.selectedUnit === unit) cellClass += ' selected';
