@@ -4,6 +4,7 @@
  * 遊戲主控制器和初始化
  */
 
+import VERSION from './version.js';
 import UIManager from './ui-manager.js';
 import AnimationSystem from './animation-system.js';
 import GameDataManager from './game-data-manager.js';
@@ -57,6 +58,9 @@ class Game {
             
             // Start animation system
             this.animationSystem.startAnimationLoop();
+            
+            // Display version information
+            this.displayVersion();
             
             // Show main menu
             this.mainMenuScene.show();
@@ -263,6 +267,57 @@ class Game {
             // Update play time
             this.gameData.gameState.playTime += deltaTime;
         }
+    }
+
+    /**
+     * Display version information / 顯示版本資訊
+     */
+    displayVersion() {
+        // 主選單版本號
+        const versionDisplay = document.getElementById('version-display');
+        if (versionDisplay) {
+            versionDisplay.textContent = VERSION.full;
+            versionDisplay.title = '點擊查看更新日誌';
+            versionDisplay.addEventListener('click', () => {
+                this.showChangelog();
+            });
+        }
+        
+        // HUD 版本號
+        const versionHud = document.getElementById('version-hud');
+        if (versionHud) {
+            versionHud.textContent = VERSION.full;
+        }
+        
+        // Console 輸出
+        console.log(`%c 靈修之路 ${VERSION.full} `, 'background: #4fd1c5; color: #0a0e1a; font-weight: bold; padding: 4px 8px;');
+        console.log(`構建日期: ${VERSION.buildDate}`);
+    }
+
+    /**
+     * Show changelog / 顯示更新日誌
+     */
+    showChangelog() {
+        const changelogHtml = VERSION.changelog.map(ver => `
+            <div class="changelog-version">
+                <h4>${ver.version}</h4>
+                <p class="changelog-date">${ver.date}</p>
+                <ul class="changelog-changes">
+                    ${ver.changes.map(change => `<li>${change}</li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+        
+        this.uiManager.showDialog({
+            title: '更新日誌',
+            content: `
+                <div class="changelog-list">
+                    ${changelogHtml}
+                </div>
+            `,
+            showCancel: false,
+            confirmText: '確認'
+        });
     }
 
     /**

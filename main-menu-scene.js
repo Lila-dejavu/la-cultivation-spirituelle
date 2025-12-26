@@ -4,6 +4,8 @@
  * 處理主選單介面
  */
 
+import VERSION from './version.js';
+
 export class MainMenuScene {
     constructor(uiManager, dataManager) {
         this.uiManager = uiManager;
@@ -208,7 +210,7 @@ export class MainMenuScene {
                 <p style="color: var(--spirit-primary); margin-bottom: 1rem;">
                     La Cultivation Spirituelle
                 </p>
-                <p style="margin-bottom: 0.5rem;">版本: 1.0.0</p>
+                <p style="margin-bottom: 0.5rem;">版本: ${VERSION.full}</p>
                 <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;">
                     一款修仙主題的回合制戰棋遊戲<br>
                     從凝氣期開始，踏上修仙之路<br>
