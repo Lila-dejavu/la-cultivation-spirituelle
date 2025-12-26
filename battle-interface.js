@@ -592,7 +592,7 @@ export class BattleInterface {
         });
 
         // Grid cell clicks
-        const gridCells = document.querySelectorAll('.grid-cell-srpg');
+        const gridCells = document.querySelectorAll('.grid-cell');
         gridCells.forEach(cell => {
             cell.addEventListener('click', (e) => {
                 const row = parseInt(cell.dataset.row);
@@ -1319,7 +1319,7 @@ style.textContent = `
         overflow: hidden;
     }
     
-    .battle-grid-srpg {
+    .battle-grid {
         display: grid;
         grid-template-columns: repeat(15, 1fr);
         gap: 2px;
@@ -1332,7 +1332,7 @@ style.textContent = `
         max-height: calc(100vh - 300px);
     }
     
-    .grid-cell-srpg {
+    .grid-cell {
         aspect-ratio: 1;
         border: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
@@ -1343,31 +1343,31 @@ style.textContent = `
         transition: all 0.2s ease;
     }
     
-    .grid-cell-srpg:hover {
+    .grid-cell:hover {
         filter: brightness(1.2);
         transform: scale(1.05);
         z-index: 1;
     }
     
-    .grid-cell-srpg.movable {
+    .grid-cell.movable {
         background-color: rgba(59, 130, 246, 0.3) !important;
         border: 2px solid #3b82f6;
         box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
     }
     
-    .grid-cell-srpg.attackable {
+    .grid-cell.attackable {
         background-color: rgba(239, 68, 68, 0.3) !important;
         border: 2px solid #ef4444;
         box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
     }
     
-    .grid-cell-srpg.selected {
+    .grid-cell.selected {
         border: 3px solid var(--gold-primary);
         box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
         z-index: 2;
     }
     
-    .grid-cell-srpg.acted {
+    .grid-cell.acted {
         opacity: 0.5;
         filter: grayscale(0.7);
     }
