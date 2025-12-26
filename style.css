@@ -1153,13 +1153,15 @@ body {
 
 @media (max-width: 768px) {
     .battle-grid {
+        grid-template-columns: repeat(15, minmax(30px, 1fr));
         gap: 1px;
         padding: 0.5rem;
+        max-height: 60vh;
     }
     
     .grid-cell {
-        min-width: 25px;
-        min-height: 25px;
+        min-width: 30px;
+        min-height: 30px;
         border-radius: 2px;
     }
     
@@ -1169,6 +1171,20 @@ body {
     
     .battle-actions {
         flex-direction: column;
+    }
+    
+    .battle-sidebar {
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .battle-main {
+        flex-direction: column;
+    }
+    
+    .unit-info-panel {
+        max-height: none;
     }
 }
 
@@ -1211,6 +1227,22 @@ body {
     
     .info-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .battle-grid {
+        grid-template-columns: repeat(15, minmax(25px, 1fr));
+        gap: 1px;
+    }
+    
+    .grid-cell {
+        min-width: 25px;
+        min-height: 25px;
+    }
+    
+    .grid-unit {
+        font-size: 1rem;
     }
 }
 
