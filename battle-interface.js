@@ -4,6 +4,12 @@
  * 管理戰術戰鬥系統（戰棋遊戲）
  */
 
+import { createEnemyInstance } from './src/data/enemies-data.js';
+import { createAllyInstance } from './src/data/allies-data.js';
+import DialogueSystem from './src/systems/dialogue-system.js';
+import StorySystem from './src/systems/story-system.js';
+import AllySystem from './src/systems/ally-system.js';
+
 /**
  * Terrain System - 地形系統
  */
@@ -333,10 +339,11 @@ class BattleAI {
 }
 
 export class BattleInterface {
-    constructor(uiManager, animationSystem) {
+    constructor(uiManager, animationSystem, gameDataManager = null) {
         this.uiManager = uiManager;
         this.animationSystem = animationSystem;
         this.character = null;
+        this.gameData = null;
         
         // Initialize systems
         this.terrainSystem = new TerrainSystem();
@@ -344,8 +351,13 @@ export class BattleInterface {
         this.combatCalculator = new CombatCalculator();
         this.battleAI = new BattleAI(this.movementSystem, this.combatCalculator);
         
+        // Initialize story systems
+        this.dialogueSystem = new DialogueSystem();
+        this.storySystem = new StorySystem(gameDataManager);
+        this.allySystem = new AllySystem(gameDataManager);
+        
         // Battle state
-        this.battleState = 'idle'; // idle, player_turn, enemy_turn, victory, defeat
+        this.battleState = 'idle'; // idle, player_turn, enemy_turn, victory, defeat, chapter_select
         this.gridSize = { rows: 15, cols: 15 };
         this.terrain = [];
         this.units = [];
@@ -359,14 +371,27 @@ export class BattleInterface {
         this.turnCount = 1;
         this.currentPreview = null;
         this.lastMovePosition = null; // Track position before move for cancel functionality
+        
+        // Story battle state
+        this.currentChapter = null;
+        this.currentBattleData = null;
     }
 
     /**
      * Initialize interface / 初始化介面
      * @param {Object} character - Character data
+     * @param {Object} gameData - Game data
      */
-    initialize(character) {
+    initialize(character, gameData = null) {
         this.character = character;
+        this.gameData = gameData;
+        
+        // Initialize story systems with game data
+        if (gameData) {
+            this.storySystem.initialize(gameData);
+            this.allySystem.initialize(gameData);
+        }
+        
         this.render();
         this.setupEventListeners();
     }
@@ -391,6 +416,12 @@ export class BattleInterface {
      * @returns {string} HTML string
      */
     renderBattleMenu() {
+        // 如果有遊戲數據，顯示章節選擇
+        if (this.gameData) {
+            return this.renderChapterSelect();
+        }
+        
+        // 否則顯示測試關卡
         return `
             <div class="battle-menu">
                 <div class="battle-intro">
@@ -402,6 +433,90 @@ export class BattleInterface {
                 
                 <div class="enemy-selection">
                     <div class="enemy-card" data-enemy="test_battle">
+                        <div class="enemy-icon">⚔️</div>
+                        <h4>測試關卡</h4>
+                        <p class="enemy-level">15x15 戰棋</p>
+                        <p class="enemy-desc">2隻靈狼，多種地形</p>
+                        <div class="enemy-stats">
+                            <span>👥 1 vs 2</span>
+                        </div>
+                        <button class="btn primary btn-challenge" data-enemy="test_battle">
+                            開始戰鬥
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render chapter select / 渲染章節選擇
+     * @returns {string} HTML string
+     */
+    renderChapterSelect() {
+        const chapters = this.storySystem.getAllChaptersWithProgress(this.gameData);
+        const stats = this.storySystem.getProgressStats(this.gameData);
+        
+        return `
+            <div class="chapter-select">
+                <div class="chapter-header">
+                    <h3>劇情戰鬥</h3>
+                    <div class="progress-info">
+                        <span>進度：${stats.completedChapters}/${stats.totalChapters} 章節</span>
+                        <span>戰鬥：${stats.completedBattles}/${stats.totalBattles}</span>
+                    </div>
+                </div>
+                
+                <div class="chapter-list">
+                    ${chapters.map(chapter => this.renderChapterCard(chapter)).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render chapter card / 渲染章節卡片
+     * @param {Object} chapter - 章節數據
+     * @returns {string} HTML string
+     */
+    renderChapterCard(chapter) {
+        const completedBattles = chapter.battles.filter(b => b.completed).length;
+        const totalBattles = chapter.battles.length;
+        const isUnlocked = chapter.unlocked;
+        const isCompleted = chapter.completed;
+        
+        const difficultyIcons = {
+            easy: '⭐',
+            normal: '⭐⭐',
+            hard: '⭐⭐⭐',
+            very_hard: '⭐⭐⭐⭐'
+        };
+        
+        return `
+            <div class="chapter-card ${!isUnlocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}" 
+                 data-chapter="${chapter.id}">
+                <div class="chapter-icon">
+                    ${isCompleted ? '✅' : isUnlocked ? '📖' : '🔒'}
+                </div>
+                <div class="chapter-info">
+                    <h4>${chapter.title}</h4>
+                    <p class="chapter-desc">${chapter.description}</p>
+                    <div class="chapter-meta">
+                        <span class="difficulty">${difficultyIcons[chapter.difficulty] || '⭐'}</span>
+                        <span class="battles">戰鬥：${completedBattles}/${totalBattles}</span>
+                        <span class="level">推薦等級：${chapter.recommendedLevel}</span>
+                    </div>
+                </div>
+                ${isUnlocked ? `
+                    <button class="btn primary btn-select-chapter" data-chapter="${chapter.id}">
+                        ${isCompleted ? '重新挑戰' : '開始'}
+                    </button>
+                ` : `
+                    <button class="btn secondary" disabled>未解鎖</button>
+                `}
+            </div>
+        `;
+    }
                         <div class="enemy-icon">⚔️</div>
                         <h4>測試關卡</h4>
                         <p class="enemy-level">15x15 戰棋</p>
@@ -633,7 +748,15 @@ export class BattleInterface {
      * Setup event listeners / 設置事件監聽
      */
     setupEventListeners() {
-        // Challenge buttons
+        // Chapter select buttons
+        const chapterBtns = document.querySelectorAll('.btn-select-chapter');
+        chapterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectChapter(btn.dataset.chapter);
+            });
+        });
+        
+        // Challenge buttons (for test battles)
         const challengeBtns = document.querySelectorAll('.btn-challenge');
         challengeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -706,6 +829,197 @@ export class BattleInterface {
                 if (onComplete) onComplete();
             }
         });
+    }
+    
+    /**
+     * Select chapter / 選擇章節
+     * @param {string} chapterId - 章節ID
+     */
+    selectChapter(chapterId) {
+        const chapterData = this.storySystem.startChapter(chapterId, this.gameData);
+        if (!chapterData) {
+            this.uiManager.showNotification('無法開始章節', 'error');
+            return;
+        }
+        
+        this.currentChapter = chapterData;
+        
+        // Play intro dialogue if exists
+        if (chapterData.introDialogue) {
+            this.dialogueSystem.playDialogue(chapterData.introDialogue, () => {
+                this.showBattleSelection(chapterData);
+            });
+        } else {
+            this.showBattleSelection(chapterData);
+        }
+    }
+    
+    /**
+     * Show battle selection / 顯示戰鬥選擇
+     * @param {Object} chapterData - 章節數據
+     */
+    showBattleSelection(chapterData) {
+        const panel = document.getElementById('battle-panel');
+        if (!panel) return;
+        
+        const chapterProgress = this.gameData.story.chapters[chapterData.id];
+        
+        panel.innerHTML = `
+            <div class="panel-section">
+                <h2 class="panel-title">${chapterData.title}</h2>
+                <p class="chapter-description">${chapterData.description}</p>
+                
+                <div class="battle-list">
+                    ${chapterData.battles.map((battle, index) => {
+                        const battleProgress = chapterProgress?.battles?.[index];
+                        const isCompleted = battleProgress?.completed || false;
+                        
+                        return `
+                            <div class="battle-card ${isCompleted ? 'completed' : ''}">
+                                <div class="battle-icon">${isCompleted ? '✅' : '⚔️'}</div>
+                                <div class="battle-info">
+                                    <h4>${battle.name}</h4>
+                                    <p>${battle.description || ''}</p>
+                                    <div class="battle-meta">
+                                        <span>👥 ${battle.playerPositions.length} vs ${battle.enemies.length}</span>
+                                    </div>
+                                </div>
+                                <button class="btn primary btn-start-battle" 
+                                        data-battle-index="${index}">
+                                    ${isCompleted ? '重新挑戰' : '開始戰鬥'}
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <button class="btn secondary" id="btn-back-to-chapters">返回章節選擇</button>
+                </div>
+            </div>
+        `;
+        
+        // Setup event listeners for battles
+        const battleBtns = panel.querySelectorAll('.btn-start-battle');
+        battleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const battleIndex = parseInt(btn.dataset.battleIndex);
+                this.startStoryBattle(chapterData, battleIndex);
+            });
+        });
+        
+        // Back button
+        const backBtn = document.getElementById('btn-back-to-chapters');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                this.battleState = 'idle';
+                this.render();
+                this.setupEventListeners();
+            });
+        }
+    }
+    
+    /**
+     * Start story battle / 開始劇情戰鬥
+     * @param {Object} chapterData - 章節數據
+     * @param {number} battleIndex - 戰鬥索引
+     */
+    startStoryBattle(chapterData, battleIndex) {
+        const battleData = chapterData.battles[battleIndex];
+        if (!battleData) {
+            console.error('Battle data not found');
+            return;
+        }
+        
+        this.currentBattleData = { ...battleData, chapterId: chapterData.id, battleIndex };
+        
+        // Play dialogue before battle
+        if (battleData.dialogueBefore) {
+            this.dialogueSystem.playDialogue(battleData.dialogueBefore, () => {
+                this.setupStoryBattle(battleData);
+            });
+        } else {
+            this.setupStoryBattle(battleData);
+        }
+    }
+    
+    /**
+     * Setup story battle / 設置劇情戰鬥
+     * @param {Object} battleData - 戰鬥數據
+     */
+    setupStoryBattle(battleData) {
+        // Generate terrain
+        this.terrain = this.terrainSystem.generateTerrain(this.gridSize.rows, this.gridSize.cols);
+        
+        // Initialize units
+        this.units = [];
+        this.playerUnits = [];
+        this.enemyUnits = [];
+        
+        // Create player unit
+        const playerUnit = {
+            id: 'player_1',
+            name: this.character.name,
+            icon: '🧙',
+            row: battleData.playerPositions[0].row,
+            col: battleData.playerPositions[0].col,
+            isPlayer: true,
+            hp: this.character.stats.maxHealth || 100,
+            maxHp: this.character.stats.maxHealth || 100,
+            attack: this.character.stats.attack || 30,
+            defense: this.character.stats.defense || 20,
+            movement: 5,
+            skill: 10,
+            evasion: 5,
+            type: 'infantry',
+            attackRange: { min: 1, max: 1 },
+            facing: 'north',
+            hasActed: false
+        };
+        this.units.push(playerUnit);
+        this.playerUnits.push(playerUnit);
+        
+        // Create ally units if specified
+        if (battleData.allyUnits && battleData.allyUnits.length > 0) {
+            battleData.allyUnits.forEach((allyId, index) => {
+                if (index + 1 < battleData.playerPositions.length) {
+                    const allyUnit = createAllyInstance(
+                        allyId,
+                        battleData.playerPositions[index + 1].row,
+                        battleData.playerPositions[index + 1].col
+                    );
+                    if (allyUnit) {
+                        allyUnit.hasActed = false;
+                        this.units.push(allyUnit);
+                        this.playerUnits.push(allyUnit);
+                    }
+                }
+            });
+        }
+        
+        // Create enemy units
+        battleData.enemies.forEach(enemyConfig => {
+            const enemyUnit = createEnemyInstance(
+                enemyConfig.id,
+                enemyConfig.position.row,
+                enemyConfig.position.col
+            );
+            if (enemyUnit) {
+                enemyUnit.hasActed = false;
+                this.units.push(enemyUnit);
+                this.enemyUnits.push(enemyUnit);
+            }
+        });
+        
+        this.battleState = 'player_turn';
+        this.turnCount = 1;
+        this.selectedUnit = null;
+        this.showingMoveRange = false;
+        this.showingAttackRange = false;
+        
+        this.render();
+        this.setupEventListeners();
+        this.addBattleLog('戰鬥開始！玩家回合');
     }
 
     /**
@@ -1469,6 +1783,100 @@ export class BattleInterface {
         // Cleanup event listeners
         this.cleanupKeyboardShortcuts();
         
+        // Handle story battle completion
+        if (this.currentBattleData && this.gameData) {
+            this.handleStoryVictory();
+        } else {
+            this.handleTestBattleVictory();
+        }
+    }
+    
+    /**
+     * Handle story battle victory / 處理劇情戰鬥勝利
+     */
+    handleStoryVictory() {
+        const battleData = this.currentBattleData;
+        
+        // Complete battle in story system
+        const rewards = this.storySystem.completeBattle(
+            battleData.chapterId,
+            battleData.id,
+            this.gameData
+        );
+        
+        // Restore player unit HP to character
+        const playerUnit = this.playerUnits[0];
+        if (playerUnit) {
+            this.character.stats.health = playerUnit.hp;
+        }
+        
+        // Play dialogue after battle
+        if (battleData.dialogueAfter) {
+            this.dialogueSystem.playDialogue(battleData.dialogueAfter, () => {
+                this.showVictoryDialog(rewards, battleData);
+            });
+        } else {
+            this.showVictoryDialog(rewards, battleData);
+        }
+    }
+    
+    /**
+     * Show victory dialog / 顯示勝利對話框
+     * @param {Object} rewards - 獎勵數據
+     * @param {Object} battleData - 戰鬥數據
+     */
+    showVictoryDialog(rewards, battleData) {
+        const rewardsContent = rewards ? `
+            <div style="margin: 1.5rem 0; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                ${rewards.exp ? `<p style="color: var(--spirit-primary);">📈 獲得經驗：${rewards.exp}</p>` : ''}
+                ${rewards.spiritStones ? `<p style="color: var(--gold-primary);">💎 獲得靈石：${rewards.spiritStones}</p>` : ''}
+                ${rewards.items && rewards.items.length > 0 ? `<p style="color: var(--text-primary);">🎁 獲得物品：${rewards.items.join(', ')}</p>` : ''}
+            </div>
+        ` : '';
+        
+        // Check if ally joins
+        let allyJoinMessage = '';
+        if (battleData.allyJoin) {
+            this.allySystem.recruitAlly(battleData.allyJoin, this.gameData);
+            const allyData = this.allySystem.getAllyById(battleData.allyJoin, this.gameData);
+            if (allyData) {
+                allyJoinMessage = `<p style="color: var(--spirit-primary); font-weight: bold;">🎊 ${allyData.name}加入了隊伍！</p>`;
+            }
+        }
+        
+        this.uiManager.showDialog({
+            title: '戰鬥勝利！',
+            content: `
+                <div style="text-align: center; line-height: 1.8;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                    <h3 style="color: var(--gold-primary);">擊敗所有敵人！</h3>
+                    <p style="color: var(--text-secondary); margin: 1.5rem 0;">
+                        戰鬥結束，${this.character.name}獲得了寶貴的經驗...
+                    </p>
+                    ${rewardsContent}
+                    ${allyJoinMessage}
+                </div>
+            `,
+            showCancel: false,
+            confirmText: '繼續',
+            onConfirm: () => {
+                this.battleState = 'idle';
+                this.currentBattleData = null;
+                this.render();
+                this.setupEventListeners();
+                this.uiManager.updateHUD(this.character);
+                
+                // Save game
+                const event = new CustomEvent('saveGame');
+                document.dispatchEvent(event);
+            }
+        });
+    }
+    
+    /**
+     * Handle test battle victory / 處理測試戰鬥勝利
+     */
+    handleTestBattleVictory() {
         // Rewards
         const expGain = 100;
         const stonesGain = 10;

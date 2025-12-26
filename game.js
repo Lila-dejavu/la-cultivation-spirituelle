@@ -38,7 +38,7 @@ class Game {
         this.characterPanel = new CharacterPanel(this.uiManager);
         this.inventoryInterface = new InventoryInterface(this.uiManager);
         this.skillInterface = new SkillInterface(this.uiManager);
-        this.battleInterface = new BattleInterface(this.uiManager, this.animationSystem);
+        this.battleInterface = new BattleInterface(this.uiManager, this.animationSystem, this.dataManager);
         
         this.setupEventListeners();
     }
@@ -227,7 +227,7 @@ class Game {
         this.characterPanel.initialize(character);
         this.inventoryInterface.initialize(character);
         this.skillInterface.initialize(character);
-        this.battleInterface.initialize(character);
+        this.battleInterface.initialize(character, this.gameData);
     }
 
     /**
