@@ -249,9 +249,19 @@ class BattleAI {
     }
 
     executeTurn(unit, playerUnits, allUnits, terrain, terrainSystem) {
+        // Filter alive players
+        const alivePlayers = playerUnits.filter(p => p.hp > 0);
+        
+        // No valid targets - wait
+        if (alivePlayers.length === 0) {
+            return { action: 'wait' };
+        }
+        
         // Find nearest player unit
-        const target = this.findNearestTarget(unit, playerUnits);
-        if (!target) return null;
+        const target = this.findNearestTarget(unit, alivePlayers);
+        if (!target) {
+            return { action: 'wait' };
+        }
         
         // Check if in attack range
         const attackRange = this.calculateAttackRange(unit, allUnits);
@@ -1020,33 +1030,57 @@ export class BattleInterface {
      * Execute enemy turn / 執行敵人回合
      */
     async executeEnemyTurn() {
-        for (const enemy of this.enemyUnits) {
-            if (enemy.hp <= 0) continue;
-            
+        // Filter alive enemies and players
+        const aliveEnemies = this.enemyUnits.filter(e => e.hp > 0);
+        const alivePlayers = this.playerUnits.filter(p => p.hp > 0);
+        
+        this.addBattleLog(`敵人數量: ${aliveEnemies.length}, 玩家數量: ${alivePlayers.length}`, 'turn');
+        
+        for (const enemy of aliveEnemies) {
             await this.delay(500);
             
-            const action = this.battleAI.executeTurn(
-                enemy, this.playerUnits, this.units, this.terrain, this.terrainSystem
-            );
+            this.addBattleLog(`${enemy.name} 開始行動...`, 'enemy');
             
-            if (action.action === 'attack') {
-                this.executeEnemyAttack(enemy, action.target);
-            } else if (action.action === 'move') {
-                enemy.row = action.destination.row;
-                enemy.col = action.destination.col;
-                this.addBattleLog(`${enemy.name} 移動到 (${enemy.row}, ${enemy.col})`, 'enemy');
-                this.refreshGrid();
-                
-                // Check if can attack after moving
-                const attackRange = this.calculateAttackRange(enemy);
-                const target = this.playerUnits.find(u => 
-                    attackRange.some(p => p.row === u.row && p.col === u.col) && u.hp > 0
+            try {
+                // Pass alive players to AI
+                const action = this.battleAI.executeTurn(
+                    enemy, alivePlayers, this.units, this.terrain, this.terrainSystem
                 );
                 
-                if (target) {
-                    await this.delay(300);
-                    this.executeEnemyAttack(enemy, target);
+                // Log AI decision
+                this.addBattleLog(`${enemy.name} 決定: ${action?.action || 'wait'}`, 'enemy');
+                
+                if (!action || action.action === 'wait') {
+                    this.addBattleLog(`${enemy.name} 等待`, 'enemy');
+                    continue;
                 }
+                
+                if (action.action === 'attack' && action.target) {
+                    this.addBattleLog(`${enemy.name} 準備攻擊 ${action.target.name}`, 'enemy');
+                    await this.delay(300);
+                    this.executeEnemyAttack(enemy, action.target);
+                } else if (action.action === 'move' && action.destination) {
+                    enemy.row = action.destination.row;
+                    enemy.col = action.destination.col;
+                    this.addBattleLog(`${enemy.name} 移動到 (${enemy.row}, ${enemy.col})`, 'enemy');
+                    this.refreshGrid();
+                    
+                    // Check if can attack after moving
+                    await this.delay(300);
+                    const attackRange = this.calculateAttackRange(enemy);
+                    const target = alivePlayers.find(u => 
+                        attackRange.some(p => p.row === u.row && p.col === u.col)
+                    );
+                    
+                    if (target) {
+                        this.addBattleLog(`${enemy.name} 移動後攻擊 ${target.name}`, 'enemy');
+                        await this.delay(300);
+                        this.executeEnemyAttack(enemy, target);
+                    }
+                }
+            } catch (error) {
+                console.error(`敵人 ${enemy.name} 行動出錯:`, error);
+                this.addBattleLog(`${enemy.name} 行動失敗`, 'error');
             }
             
             await this.delay(300);
