@@ -366,6 +366,7 @@ body {
     display: flex;
     justify-content: space-between;
     margin-top: var(--spacing-xl);
+    padding-bottom: 3rem; /* 為 Chrome 添加底部空間 */
 }
 
 /* ========== 遊戲主介面 / Game Interface ========== */
@@ -732,6 +733,392 @@ body {
     border-top: 2px solid var(--spirit-primary);
 }
 
+/* ========== 戰鬥系統樣式 / Battle System Styles ========== */
+
+/* 戰鬥選單 */
+.battle-menu {
+    padding: 2rem;
+}
+
+.battle-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.battle-intro h3 {
+    color: var(--gold-primary);
+    font-size: 1.5rem;
+}
+
+.enemy-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.enemy-card {
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.enemy-card:hover:not(.disabled) {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+.enemy-card.disabled {
+    opacity: 0.5;
+}
+
+.enemy-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.enemy-card h4 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.enemy-level {
+    color: var(--gold-primary);
+    margin-bottom: 0.5rem;
+}
+
+.enemy-desc {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.enemy-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+/* 戰場 */
+.battlefield {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* 戰鬥資訊區 */
+.battle-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.turn-indicator {
+    font-size: 1.25rem;
+    color: var(--gold-primary);
+    font-weight: bold;
+}
+
+.turn-counter {
+    color: var(--text-secondary);
+}
+
+/* 戰鬥格子 - 關鍵樣式！ */
+.battle-grid {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 2px;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    max-width: 100%;
+    overflow: auto;
+    aspect-ratio: 1 / 1;
+    max-height: 70vh;
+}
+
+.grid-cell {
+    aspect-ratio: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--text-dim);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.grid-cell:hover {
+    border-color: var(--spirit-primary);
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* 地形樣式 */
+.grid-cell.terrain-plain {
+    background: #2a3f2a;
+}
+
+.grid-cell.terrain-forest {
+    background: linear-gradient(135deg, #1a4d1a 0%, #2d5f2d 100%);
+    border-color: #22c55e;
+}
+
+.grid-cell.terrain-mountain {
+    background: linear-gradient(135deg, #4a4a4a 0%, #6b6b6b 100%);
+    border-color: #9ca3af;
+}
+
+.grid-cell.terrain-river {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    border-color: #3b82f6;
+}
+
+.grid-cell.terrain-castle {
+    background: linear-gradient(135deg, #7c2d12 0%, #a16207 100%);
+    border-color: var(--gold-primary);
+}
+
+/* 單位樣式 */
+.grid-cell.player-cell {
+    background: rgba(79, 209, 197, 0.3);
+    border: 2px solid var(--spirit-primary);
+    box-shadow: 0 0 10px var(--spirit-glow);
+}
+
+.grid-cell.enemy-cell {
+    background: rgba(239, 68, 68, 0.3);
+    border: 2px solid var(--danger);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.grid-unit {
+    font-size: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* 範圍高亮 */
+.grid-cell.movable {
+    background: rgba(100, 150, 255, 0.4);
+    border: 2px solid #6496ff;
+    animation: pulse-blue 1.5s ease-in-out infinite;
+}
+
+.grid-cell.attackable {
+    background: rgba(255, 100, 100, 0.4);
+    border: 2px solid #ff6464;
+    animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-blue {
+    0%, 100% { box-shadow: 0 0 5px rgba(100, 150, 255, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(100, 150, 255, 0.8); }
+}
+
+@keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 100, 100, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 100, 100, 0.8); }
+}
+
+/* 選中狀態 */
+.grid-cell.selected {
+    border: 3px solid var(--gold-primary);
+    box-shadow: 0 0 20px var(--gold-glow);
+    z-index: 20;
+}
+
+/* 已行動狀態 */
+.grid-cell.acted {
+    opacity: 0.5;
+    filter: grayscale(50%);
+}
+
+/* 單位資訊面板 */
+.unit-info-panel {
+    position: fixed;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    background: var(--bg-secondary);
+    border: 2px solid var(--gold-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    min-width: 250px;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+}
+
+.unit-info-panel h4 {
+    color: var(--gold-primary);
+    margin-bottom: 1rem;
+}
+
+.unit-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+/* 戰鬥預測視窗 */
+.battle-prediction {
+    position: absolute;
+    background: var(--bg-elevated);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    min-width: 200px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.battle-prediction h5 {
+    color: var(--gold-primary);
+    margin-bottom: 0.5rem;
+}
+
+.prediction-stat {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+/* 戰鬥日誌 */
+.battle-log {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--spirit-primary);
+}
+
+.log-entry {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-left: 3px solid var(--spirit-primary);
+    padding-left: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.log-entry.player-action {
+    border-color: var(--spirit-primary);
+    color: var(--spirit-primary);
+}
+
+.log-entry.enemy-action {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.log-entry.system {
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+/* 行動按鈕 */
+.battle-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+}
+
+.action-btn {
+    padding: 1rem 2rem;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--spirit-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--gold-primary);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn.end-turn {
+    background: linear-gradient(135deg, var(--spirit-secondary), var(--spirit-primary));
+    border-color: var(--gold-primary);
+}
+
+/* 響應式 - 戰鬥系統 */
+@media (max-width: 1024px) {
+    .battle-grid {
+        grid-template-columns: repeat(15, 1fr);
+        max-height: 50vh;
+    }
+    
+    .grid-cell {
+        min-width: 30px;
+        min-height: 30px;
+    }
+    
+    .grid-unit {
+        font-size: 1.5rem;
+    }
+    
+    .unit-info-panel {
+        position: static;
+        transform: none;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .battle-grid {
+        gap: 1px;
+        padding: 0.5rem;
+    }
+    
+    .grid-cell {
+        min-width: 25px;
+        min-height: 25px;
+        border-radius: 2px;
+    }
+    
+    .grid-unit {
+        font-size: 1.2rem;
+    }
+    
+    .battle-actions {
+        flex-direction: column;
+    }
+}
+
 /* ========== 響應式設計 / Responsive Design ========== */
 @media (max-width: 768px) {
     .game-title {
@@ -741,6 +1128,20 @@ body {
     .menu-btn {
         min-width: 200px;
         font-size: 1rem;
+    }
+    
+    #character-creation {
+        padding: var(--spacing-md);
+        padding-bottom: calc(var(--spacing-md) + 80px); /* 額外的底部空間 */
+    }
+    
+    .creation-container {
+        padding: var(--spacing-md);
+        margin-bottom: 2rem;
+    }
+    
+    .creation-buttons {
+        padding-bottom: 4rem; /* 移動端更多空間 */
     }
     
     .sidebar {
