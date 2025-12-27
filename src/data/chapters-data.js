@@ -11,7 +11,7 @@ export const CHAPTERS_DATA = {
         id: 'chapter_1',
         number: 1,
         title: '第一章：初入修行',
-        description: '踏入森林深處，與靈獸的初次對決',
+        description: '踏入青玄林深處，尋覓聚靈草，與靈獸的初次對決',
         unlocked: true, // 第一章默認解鎖
         completed: false,
         difficulty: 'easy',
@@ -20,8 +20,8 @@ export const CHAPTERS_DATA = {
         battles: [
             {
                 id: 'ch1_battle1',
-                name: '靈狼來襲',
-                description: '遭遇普通靈狼群',
+                name: '青玄林初遇',
+                description: '闖入靈狼領地，群狼環伺',
                 enemies: [
                     { id: 'spirit_wolf', position: { row: 2, col: 12 } },
                     { id: 'spirit_wolf', position: { row: 4, col: 13 } }
@@ -40,8 +40,8 @@ export const CHAPTERS_DATA = {
             },
             {
                 id: 'ch1_battle2',
-                name: '狼王之戰',
-                description: '挑戰靈狼首領',
+                name: '狼王之怒',
+                description: '靈狼首領率群而至，凶威赫赫',
                 enemies: [
                     { id: 'spirit_wolf', position: { row: 3, col: 11 } },
                     { id: 'spirit_wolf', position: { row: 3, col: 13 } },
@@ -72,7 +72,7 @@ export const CHAPTERS_DATA = {
         id: 'chapter_2',
         number: 2,
         title: '第二章：森林危機',
-        description: '深入密林，邪修的陰謀浮現',
+        description: '深入幽暗密林，邪惡氣息蔓延，神秘邪修的陰謀逐漸浮現',
         unlocked: false,
         completed: false,
         difficulty: 'normal',
@@ -81,8 +81,8 @@ export const CHAPTERS_DATA = {
         battles: [
             {
                 id: 'ch2_battle1',
-                name: '毒蛇襲擊',
-                description: '遭遇毒蛇群',
+                name: '毒蛇伏擊',
+                description: '陰影中毒蛇現身，劇毒瀰漫',
                 enemies: [
                     { id: 'poison_snake', position: { row: 3, col: 10 } },
                     { id: 'poison_snake', position: { row: 4, col: 12 } },
@@ -103,7 +103,7 @@ export const CHAPTERS_DATA = {
             {
                 id: 'ch2_battle2',
                 name: '邪修現身',
-                description: '與邪修的戰鬥',
+                description: '黑袍邪修露出真面目，邪氣沖天',
                 enemies: [
                     { id: 'evil_cultivator', position: { row: 2, col: 12 } },
                     { id: 'poison_snake', position: { row: 4, col: 10 } },
@@ -124,7 +124,7 @@ export const CHAPTERS_DATA = {
             {
                 id: 'ch2_battle3',
                 name: '妖修首領',
-                description: 'Boss戰：妖修首領',
+                description: 'Boss戰：妖修首領施展邪法，妖氣滔天',
                 enemies: [
                     { id: 'demon_leader', position: { row: 2, col: 12 } },
                     { id: 'evil_cultivator', position: { row: 4, col: 10 } },
