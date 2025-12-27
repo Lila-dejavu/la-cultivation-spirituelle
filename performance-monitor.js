@@ -5,6 +5,13 @@
  */
 
 export class PerformanceMonitor {
+    // Color constants for FPS display
+    static FPS_COLOR_GOOD = '#0f0';
+    static FPS_COLOR_MEDIUM = '#ff0';
+    static FPS_COLOR_BAD = '#f00';
+    static FPS_THRESHOLD_GOOD = 55;
+    static FPS_THRESHOLD_MEDIUM = 30;
+
     constructor() {
         this.fps = 0;
         this.frameCount = 0;
@@ -116,7 +123,11 @@ export class PerformanceMonitor {
     updateDisplay() {
         if (!this.displayElement) return;
 
-        const fpsColor = this.fps >= 55 ? '#0f0' : this.fps >= 30 ? '#ff0' : '#f00';
+        const fpsColor = this.fps >= PerformanceMonitor.FPS_THRESHOLD_GOOD 
+            ? PerformanceMonitor.FPS_COLOR_GOOD 
+            : this.fps >= PerformanceMonitor.FPS_THRESHOLD_MEDIUM 
+                ? PerformanceMonitor.FPS_COLOR_MEDIUM 
+                : PerformanceMonitor.FPS_COLOR_BAD;
         
         let html = `<div style="color: ${fpsColor}; font-size: 14px; font-weight: bold;">FPS: ${this.fps}</div>`;
         html += `<div style="margin-top: 5px; font-size: 11px;">`;

@@ -179,9 +179,10 @@ export class ImageAssetManager {
      * Compress image quality for better performance / 壓縮圖片質量以提升性能
      * @param {HTMLImageElement} image - Source image
      * @param {number} quality - Quality (0-1)
+     * @param {string} type - MIME type (default: 'image/jpeg')
      * @returns {Promise<Blob>}
      */
-    async compressImage(image, quality = 0.8) {
+    async compressImage(image, quality = 0.8, type = 'image/jpeg') {
         return new Promise((resolve) => {
             const canvas = document.createElement('canvas');
             canvas.width = image.width;
@@ -192,7 +193,7 @@ export class ImageAssetManager {
             
             canvas.toBlob(
                 (blob) => resolve(blob),
-                'image/jpeg',
+                type,
                 quality
             );
         });

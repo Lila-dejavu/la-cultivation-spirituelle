@@ -5,13 +5,16 @@
  */
 
 export class AnimationSystem {
-    constructor() {
+    // Configuration constants
+    static DEFAULT_POOL_SIZE = 200; // Balance between memory usage and object reuse
+
+    constructor(options = {}) {
         this.particles = [];
         this.animations = new Map();
         this.canvas = null;
         this.ctx = null;
         this.particlePool = []; // Particle object pooling
-        this.maxPoolSize = 200;
+        this.maxPoolSize = options.maxPoolSize || AnimationSystem.DEFAULT_POOL_SIZE;
         this.isAnimating = false;
     }
 

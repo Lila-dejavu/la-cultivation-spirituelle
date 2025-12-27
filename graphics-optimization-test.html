@@ -183,7 +183,7 @@
         // Animate bar button
         document.getElementById('btn-animate-bar').addEventListener('click', () => {
             const bar = document.getElementById('test-bar');
-            const currentWidth = parseInt(bar.style.width);
+            const currentWidth = parseFloat(bar.style.width) || 0;
             const newWidth = currentWidth >= 100 ? 0 : 100;
             bar.style.width = newWidth + '%';
         });
