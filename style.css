@@ -133,6 +133,8 @@ body {
     background: linear-gradient(90deg, var(--spirit-primary), var(--spirit-secondary));
     transition: width 0.3s ease;
     box-shadow: 0 0 10px var(--spirit-glow);
+    will-change: width;
+    transform: translateZ(0);
 }
 
 .loading-text {
@@ -164,6 +166,8 @@ body {
     background-size: 200% 200%;
     animation: particles-float 20s ease-in-out infinite;
     opacity: 0.3;
+    will-change: background-position;
+    transform: translateZ(0);
 }
 
 @keyframes particles-float {
@@ -184,6 +188,7 @@ body {
 .glow {
     text-shadow: 0 0 30px var(--spirit-glow);
     animation: glow-pulse 3s ease-in-out infinite;
+    will-change: text-shadow;
 }
 
 @keyframes glow-pulse {
@@ -210,6 +215,8 @@ body {
     min-width: 250px;
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
 }
 
 .menu-btn::before {
@@ -221,6 +228,8 @@ body {
     height: 100%;
     background: linear-gradient(90deg, transparent, var(--spirit-glow), transparent);
     transition: left 0.5s ease;
+    will-change: left;
+    transform: translateZ(0);
 }
 
 .menu-btn:hover::before {
@@ -250,6 +259,8 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .btn:hover {
@@ -407,6 +418,8 @@ body {
     border: 3px solid var(--gold-primary);
     border-radius: 50%;
     box-shadow: 0 0 20px var(--gold-glow);
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .character-stats {
@@ -439,6 +452,8 @@ body {
     height: 100%;
     transition: width 0.3s ease;
     border-radius: var(--radius-sm);
+    will-change: width;
+    transform: translateZ(0);
 }
 
 .health-bar .stat-bar-fill {
@@ -551,6 +566,8 @@ body {
     overflow-y: auto;
     padding: var(--spacing-lg);
     background: var(--bg-primary);
+    contain: layout style paint;
+    -webkit-overflow-scrolling: touch;
 }
 
 .panel {
@@ -565,11 +582,11 @@ body {
 @keyframes panel-fade-in {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(20px) translateZ(0);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
     }
 }
 
@@ -914,6 +931,9 @@ body {
     position: relative;
     min-width: 40px;
     min-height: 40px;
+    contain: layout;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .grid-cell:hover {

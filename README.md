@@ -111,11 +111,47 @@ npm run build
 npm test
 ```
 
+### 圖形優化測試 (Graphics Optimization Test)
+```bash
+# 在瀏覽器中打開測試頁面
+open graphics-optimization-test.html
+```
+
+## 圖形優化 (Graphics Optimization)
+
+本遊戲實施了多項圖形性能優化技術以提供流暢的遊戲體驗：
+
+### 主要優化功能 / Key Optimization Features
+
+- **Canvas 渲染優化**: 使用優化的 context 選項和批量渲染技術
+- **粒子系統對象池**: 減少 GC 壓力，提高粒子效果性能
+- **圖像資源管理**: 支持圖像預加載、緩存和精靈圖系統
+- **CSS 性能提升**: 使用硬件加速和 CSS containment
+- **性能監控**: 實時 FPS 監控和性能指標追蹤
+
+詳細信息請參閱 [圖形優化指南](docs/GRAPHICS_OPTIMIZATION.md)
+
+### 使用示例 / Usage Example
+
+```javascript
+import { setupCompleteGraphicsOptimization } from './graphics-optimization-integration.js';
+
+// 初始化所有圖形優化系統
+const systems = await setupCompleteGraphicsOptimization();
+
+// 使用動畫系統
+systems.animationSystem.createSpiritualParticles(x, y, options);
+
+// 監控性能
+console.log('FPS:', systems.perfMonitor.getFPS());
+```
+
 ## 文檔導航 (Documentation)
 
 - [修煉系統完整指南](docs/CULTIVATION_GUIDE.md) - 境界、突破、靈根、道悟、天劫
 - [戰鬥系統說明](docs/BATTLE_SYSTEM.md) - 回合制戰棋、五行相剋、陣法系統
 - [寶物收集指南](docs/TREASURE_GUIDE.md) - 法寶、丹藥、天材地寶、煉器煉丹
+- [圖形優化指南](docs/GRAPHICS_OPTIMIZATION.md) - 性能優化、渲染技術、最佳實踐
 - [故事大綱](docs/STORY_OUTLINE.md) - 世界觀、主要角色、劇情走向
 - [架構文檔](docs/ARCHITECTURE.md) - 系統架構、技術選型
 - [貢獻指南](docs/CONTRIBUTING.md) - 如何參與開發
@@ -149,6 +185,12 @@ npm test
 - [x] 場景系統
 
 ### Phase 4: 完善與優化 (進行中)
+- [x] 圖形性能優化
+  - [x] Canvas 渲染優化
+  - [x] 粒子系統對象池
+  - [x] 圖像資源管理
+  - [x] CSS 性能提升
+  - [x] 性能監控工具
 - [ ] 遊戲平衡調整
 - [ ] 美術資源整合
 - [ ] 音效系統
