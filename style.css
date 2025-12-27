@@ -1267,9 +1267,6 @@ body {
 /* ========== Action Menu / 行動選單 ========== */
 .battle-menu-container {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     z-index: 1000;
     display: none;
 }
@@ -1294,6 +1291,164 @@ body {
     margin: 0.5rem 0;
     padding: 0.75rem 1rem;
     font-size: 1rem;
+}
+
+/* ========== Hover Preview Styles / 懸停預覽樣式 ========== */
+/* Movement preview on hover (lighter than selection) */
+.grid-cell.move-preview {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+}
+
+/* Path preview */
+.grid-cell.path-preview {
+    background-color: rgba(100, 200, 255, 0.4) !important;
+    border: 2px solid rgba(100, 200, 255, 0.8);
+    box-shadow: 0 0 8px rgba(100, 200, 255, 0.6);
+    animation: path-pulse 1s ease-in-out infinite;
+}
+
+@keyframes path-pulse {
+    0%, 100% { 
+        box-shadow: 0 0 8px rgba(100, 200, 255, 0.6);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 15px rgba(100, 200, 255, 0.8);
+        transform: scale(1.05);
+    }
+}
+
+/* Hover combat preview floating window */
+.hover-combat-preview {
+    position: fixed;
+    background: var(--bg-elevated);
+    border: 2px solid var(--gold-primary);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    min-width: 200px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    pointer-events: none;
+    animation: preview-fade-in 0.2s ease;
+}
+
+@keyframes preview-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.hover-combat-preview .preview-header {
+    color: var(--gold-primary);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--spirit-primary);
+    font-size: 0.9rem;
+}
+
+.hover-combat-preview .preview-attacker,
+.hover-combat-preview .preview-defender {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.hover-combat-preview .preview-attacker span,
+.hover-combat-preview .preview-defender span {
+    font-size: 2rem;
+}
+
+.hover-combat-preview .preview-stats {
+    flex: 1;
+}
+
+.hover-combat-preview .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0;
+}
+
+.hover-combat-preview .stat .value {
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.hover-combat-preview .stat .value.damage {
+    color: var(--danger);
+}
+
+.hover-combat-preview .stat .value.hit {
+    color: var(--info);
+}
+
+.hover-combat-preview .preview-divider {
+    text-align: center;
+    color: var(--gold-primary);
+    font-weight: bold;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+/* Terrain hover info in sidebar */
+.terrain-hover-info {
+    padding: 1rem;
+    color: var(--text-secondary);
+}
+
+.terrain-hover-info h4 {
+    color: var(--spirit-primary);
+    margin-bottom: 0.75rem;
+}
+
+.terrain-hover-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+/* ========== Ready Unit Animation / 就緒單位動畫 ========== */
+/* Pulse animation for ready units */
+.grid-unit.player:not(.acted) {
+    animation: ready-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ready-pulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px #4fd1c5);
+    }
+    50% {
+        filter: drop-shadow(0 0 15px #4fd1c5) drop-shadow(0 0 25px #4fd1c5);
+    }
+}
+
+/* Enhanced distinction between movement and attack range */
+.grid-cell.movable {
+    background-color: rgba(59, 130, 246, 0.3) !important;
+    border: 2px solid #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.grid-cell.attackable {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+    border: 2px solid #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Override acted state for grid-unit specifically */
+.grid-cell.acted .grid-unit.player {
+    filter: drop-shadow(0 0 3px rgba(79, 209, 197, 0.3)) grayscale(0.5);
+    animation: none;
 }
 
 /* ========== Unit List Panel / 單位列表面板 ========== */
