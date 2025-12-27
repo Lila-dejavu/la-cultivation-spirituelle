@@ -140,14 +140,8 @@ export class InventoryInterface {
         // Try to get image path
         const imagePath = imageManager.getImagePath('items', itemId);
         
-        if (imagePath) {
-            // Return img tag with fallback
-            return `<img src="${imagePath}" alt="${itemId}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                    <span style="display:none;">${this.getItemEmoji(itemId)}</span>`;
-        }
-        
-        // Fallback to emoji
-        return this.getItemEmoji(itemId);
+        // Use helper method to create image HTML with fallback
+        return imageManager.createImageHTML(imagePath, itemId, this.getItemEmoji(itemId));
     }
     
     /**

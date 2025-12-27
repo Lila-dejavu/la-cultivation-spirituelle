@@ -211,6 +211,24 @@ export class ImageManager {
             categories: Object.keys(this.config)
         };
     }
+
+    /**
+     * Create image HTML with fallback / 創建帶降級的圖像 HTML
+     * @param {string} imagePath - Image path
+     * @param {string} altText - Alt text
+     * @param {string} fallbackEmoji - Fallback emoji
+     * @param {string} className - Optional CSS class
+     * @returns {string} HTML string with image and fallback
+     */
+    createImageHTML(imagePath, altText, fallbackEmoji, className = '') {
+        if (!imagePath) {
+            return fallbackEmoji;
+        }
+        
+        const classAttr = className ? ` class="${className}"` : '';
+        return `<img src="${imagePath}" alt="${altText}"${classAttr} onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                <span style="display:none;">${fallbackEmoji}</span>`;
+    }
 }
 
 // Export singleton instance

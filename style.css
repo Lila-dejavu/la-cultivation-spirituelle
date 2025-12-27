@@ -418,8 +418,8 @@ body {
     border: 3px solid var(--gold-primary);
     border-radius: 50%;
     box-shadow: 0 0 20px var(--gold-glow);
-    overflow: hidden;
-    position: relative;
+    overflow: hidden; /* Clip image to circular frame */
+    position: relative; /* For absolute positioning of fallback effects */
     will-change: transform;
     transform: translateZ(0);
 }

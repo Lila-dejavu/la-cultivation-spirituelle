@@ -642,19 +642,13 @@ export class BattleInterface {
         if (unit.isPlayer) {
             imagePath = imageManager.getImagePath('characters', 'cultivator_default');
         } else {
-            // For enemies, try to match name or use icon property if it's an ID
-            const enemyKey = unit.name === '靈狼' ? 'spirit_wolf' : (unit.iconId || unit.name.toLowerCase().replace(/\s/g, '_'));
+            // For enemies, try to match name or use iconId property
+            const enemyKey = unit.iconId || unit.name === '靈狼' ? 'spirit_wolf' : unit.name.toLowerCase().replace(/\s/g, '_');
             imagePath = imageManager.getImagePath('enemies', enemyKey);
         }
         
-        // If image path exists, return img tag with fallback
-        if (imagePath) {
-            return `<img src="${imagePath}" alt="${unit.name}" class="unit-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
-                    <span style="display:none;">${unit.icon}</span>`;
-        }
-        
-        // Fallback to emoji
-        return unit.icon;
+        // Use helper method to create image HTML with fallback
+        return imageManager.createImageHTML(imagePath, unit.name, unit.icon, 'unit-image');
     }
 
     /**
