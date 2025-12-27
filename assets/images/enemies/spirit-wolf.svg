@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <radialGradient id="wolfGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#6b7280;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#1f2937;stop-opacity:0.2" />
+    </radialGradient>
+    <linearGradient id="wolfFur" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9ca3af" />
+      <stop offset="100%" style="stop-color:#4b5563" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer glow -->
+  <circle cx="50" cy="50" r="45" fill="url(#wolfGlow)" opacity="0.3" />
+  
+  <!-- Wolf head -->
+  <ellipse cx="50" cy="45" rx="25" ry="20" fill="url(#wolfFur)" />
+  
+  <!-- Ears -->
+  <path d="M 30 35 L 25 20 L 35 30 Z" fill="#6b7280" />
+  <path d="M 70 35 L 75 20 L 65 30 Z" fill="#6b7280" />
+  
+  <!-- Snout -->
+  <ellipse cx="50" cy="52" rx="12" ry="8" fill="#9ca3af" />
+  
+  <!-- Eyes with spirit glow -->
+  <ellipse cx="42" cy="42" rx="4" ry="5" fill="#ef4444">
+    <animate attributeName="opacity" values="1;0.6;1" dur="3s" repeatCount="indefinite" />
+  </ellipse>
+  <ellipse cx="58" cy="42" rx="4" ry="5" fill="#ef4444">
+    <animate attributeName="opacity" values="1;0.6;1" dur="3s" repeatCount="indefinite" />
+  </ellipse>
+  
+  <!-- Eye highlights -->
+  <circle cx="43" cy="41" r="1.5" fill="#fecaca" />
+  <circle cx="59" cy="41" r="1.5" fill="#fecaca" />
+  
+  <!-- Nose -->
+  <ellipse cx="50" cy="50" rx="3" ry="2" fill="#1f2937" />
+  
+  <!-- Teeth/fangs -->
+  <path d="M 44 56 L 42 60 L 46 58 Z" fill="#f3f4f6" />
+  <path d="M 56 56 L 58 60 L 54 58 Z" fill="#f3f4f6" />
+  
+  <!-- Body -->
+  <ellipse cx="50" cy="70" rx="22" ry="18" fill="url(#wolfFur)" />
+  
+  <!-- Spirit energy wisps -->
+  <path d="M 20 60 Q 15 50 20 40" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" />
+  </path>
+  <path d="M 80 60 Q 85 50 80 40" stroke="#ef4444" stroke-width="1.5" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+  </path>
+</svg>

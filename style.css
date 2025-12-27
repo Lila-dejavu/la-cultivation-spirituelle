@@ -407,6 +407,15 @@ body {
     border: 3px solid var(--gold-primary);
     border-radius: 50%;
     box-shadow: 0 0 20px var(--gold-glow);
+    overflow: hidden;
+    position: relative;
+}
+
+.avatar-frame img,
+.avatar-frame svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .character-stats {
@@ -1807,6 +1816,262 @@ body {
 .battle-meta {
     font-size: 0.85rem;
     color: var(--text-dim);
+}
+
+/* ========== Image System Styles / 圖像系統樣式 ========== */
+
+/* Base image styles */
+.game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Fallback image container */
+.fallback-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: inherit;
+    position: relative;
+}
+
+/* Character avatar fallback - CSS cultivator style */
+.fallback-characters,
+.avatar-frame.use-css-fallback {
+    background: radial-gradient(circle, #4fd1c5, #2c7a7b);
+    position: relative;
+    overflow: hidden;
+}
+
+.fallback-characters::before,
+.avatar-frame.use-css-fallback::before {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.8), transparent);
+    border-radius: 50%;
+    animation: spiritual-aura 3s ease-in-out infinite;
+    top: 10%;
+    left: 20%;
+}
+
+@keyframes spiritual-aura {
+    0%, 100% { 
+        transform: scale(0.8) translateY(0);
+        opacity: 0.6;
+    }
+    50% { 
+        transform: scale(1.2) translateY(-10%);
+        opacity: 1;
+    }
+}
+
+/* Item icon fallbacks - CSS shapes */
+.fallback-items-healing_pill_low,
+.item-icon.pill-red {
+    background: radial-gradient(circle, #ef4444, #991b1b);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    animation: pill-glow-red 2s ease-in-out infinite;
+}
+
+@keyframes pill-glow-red {
+    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+    50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9); }
+}
+
+.fallback-items-mana_pill_low,
+.item-icon.pill-blue {
+    background: radial-gradient(circle, #3b82f6, #1e40af);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+    animation: pill-glow-blue 2s ease-in-out infinite;
+}
+
+@keyframes pill-glow-blue {
+    0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+    50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.9); }
+}
+
+.fallback-items-iron_sword,
+.item-icon.sword {
+    background: linear-gradient(135deg, #e5e7eb, #6b7280);
+    clip-path: polygon(
+        50% 0%, 55% 60%, 60% 60%, 60% 65%, 
+        55% 65%, 52% 100%, 48% 100%, 
+        45% 65%, 40% 65%, 40% 60%, 45% 60%
+    );
+    box-shadow: 0 0 15px rgba(79, 209, 197, 0.5);
+    animation: sword-glow 2s ease-in-out infinite;
+}
+
+@keyframes sword-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(79, 209, 197, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(79, 209, 197, 0.8); }
+}
+
+.fallback-items-spirit_stone_low,
+.item-icon.spirit-stone {
+    background: radial-gradient(circle, #fef3c7, #d97706);
+    clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.7);
+    animation: stone-glow 3s ease-in-out infinite;
+}
+
+@keyframes stone-glow {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.7);
+        transform: rotate(0deg);
+    }
+    50% { 
+        box-shadow: 0 0 35px rgba(251, 191, 36, 1);
+        transform: rotate(180deg);
+    }
+}
+
+/* Enemy icon fallbacks */
+.fallback-enemies-spirit_wolf,
+.enemy-icon.wolf {
+    background: radial-gradient(ellipse, #6b7280, #1f2937);
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.fallback-enemies-spirit_wolf::before,
+.enemy-icon.wolf::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 30%;
+    background: #ef4444;
+    border-radius: 50%;
+    top: 30%;
+    left: 20%;
+    box-shadow: 30px 0 0 #ef4444;
+    animation: wolf-eyes 3s ease-in-out infinite;
+}
+
+@keyframes wolf-eyes {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Enhanced avatar frame with image support */
+.avatar-frame {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: var(--bg-tertiary);
+    border: 3px solid var(--gold-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--gold-glow);
+    overflow: hidden;
+    position: relative;
+}
+
+.avatar-frame img,
+.avatar-frame .game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Item icon enhancements */
+.item-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+.item-icon img,
+.item-icon .game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Enemy icon enhancements */
+.enemy-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+}
+
+.enemy-icon img,
+.enemy-icon .game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Grid unit image support */
+.grid-unit {
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.grid-unit img,
+.grid-unit .game-image {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.grid-unit.player img,
+.grid-unit.player .game-image {
+    filter: drop-shadow(0 0 5px #4fd1c5);
+}
+
+.grid-unit.enemy img,
+.grid-unit.enemy .game-image {
+    filter: drop-shadow(0 0 5px #ef4444);
+}
+
+/* Loading state for images */
+.image-loading {
+    opacity: 0.5;
+    animation: image-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes image-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+/* Image error state */
+.image-error {
+    background: var(--bg-tertiary);
+    border: 2px dashed var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 0.75rem;
 }
 
 /* ========== Animations / 動畫 ========== */
