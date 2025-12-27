@@ -11,6 +11,7 @@ export class PerformanceMonitor {
     static FPS_COLOR_BAD = '#f00';
     static FPS_THRESHOLD_GOOD = 55;
     static FPS_THRESHOLD_MEDIUM = 30;
+    static BYTES_PER_MB = 1048576; // 1024 * 1024
 
     constructor() {
         this.fps = 0;
@@ -136,8 +137,8 @@ export class PerformanceMonitor {
         
         // Add memory info if available
         if (performance.memory) {
-            const usedMB = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
-            const totalMB = (performance.memory.totalJSHeapSize / 1048576).toFixed(2);
+            const usedMB = (performance.memory.usedJSHeapSize / PerformanceMonitor.BYTES_PER_MB).toFixed(2);
+            const totalMB = (performance.memory.totalJSHeapSize / PerformanceMonitor.BYTES_PER_MB).toFixed(2);
             html += `<br>Memory: ${usedMB} / ${totalMB} MB`;
         }
         
@@ -182,7 +183,7 @@ export class PerformanceMonitor {
      * @param {Object} data - Additional data
      */
     logWarning(message, data = {}) {
-        if (this.fps < 30) {
+        if (this.fps < PerformanceMonitor.FPS_THRESHOLD_MEDIUM) {
             console.warn(`[Performance Warning] ${message}`, {
                 fps: this.fps,
                 frameTime: this.metrics.frameTime,

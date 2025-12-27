@@ -6,7 +6,10 @@
 
 export class AnimationSystem {
     // Configuration constants
-    static DEFAULT_POOL_SIZE = 200; // Balance between memory usage and object reuse
+    // Pool size of 200 balances memory usage (~10KB for particle objects) 
+    // with object reuse benefits. Based on typical particle effects using 
+    // 20-50 particles per effect, this allows ~4-10 effects in flight.
+    static DEFAULT_POOL_SIZE = 200;
 
     constructor(options = {}) {
         this.particles = [];

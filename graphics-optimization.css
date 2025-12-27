@@ -4,6 +4,11 @@
  * 動畫和渲染的性能增強
  */
 
+:root {
+    /* Performance optimization constants */
+    --reduced-motion-duration: 0.01ms;
+}
+
 /* ========== Hardware Acceleration & Performance ========== */
 
 /* Enable GPU acceleration for animations */
@@ -261,9 +266,9 @@ img[loading="lazy"] {
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
+        animation-duration: var(--reduced-motion-duration) !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: var(--reduced-motion-duration) !important;
     }
 }
 

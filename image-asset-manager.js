@@ -117,6 +117,12 @@ export class ImageAssetManager {
 
         const { image, frameWidth, frameHeight, frames } = sheet;
         
+        // Validate dimensions
+        if (frameWidth <= 0 || frameHeight <= 0) {
+            console.error(`Invalid frame dimensions: ${frameWidth}x${frameHeight}`);
+            return;
+        }
+        
         // Calculate source position
         let sx, sy;
         if (frames.length > 0 && frames[frameIndex]) {
