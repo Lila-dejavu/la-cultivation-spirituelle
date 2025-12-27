@@ -371,6 +371,8 @@ export class BattleInterface {
         this.turnCount = 1;
         this.currentPreview = null;
         this.lastMovePosition = null; // Track position before move for cancel functionality
+        this.hoveredCell = null; // Track currently hovered cell
+        this.previewPath = []; // Track path preview for hover
         
         // Story battle state
         this.currentChapter = null;
@@ -609,7 +611,8 @@ export class BattleInterface {
                 let content = '';
                 if (unit) {
                     const unitClass = unit.isPlayer ? 'player' : 'enemy';
-                    content = `<div class="grid-unit ${unitClass}">${unit.icon}</div>`;
+                    const actedClass = unit.hasActed ? 'acted' : '';
+                    content = `<div class="grid-unit ${unitClass} ${actedClass}">${unit.icon}</div>`;
                 }
                 
                 html += `
@@ -778,6 +781,17 @@ export class BattleInterface {
                 const row = parseInt(cell.dataset.row);
                 const col = parseInt(cell.dataset.col);
                 this.handleCellRightClick(row, col);
+            });
+            
+            // Add hover listeners
+            cell.addEventListener('mouseenter', (e) => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                this.handleCellHover(row, col);
+            });
+            
+            cell.addEventListener('mouseleave', (e) => {
+                this.handleCellLeave();
             });
         });
 
@@ -1144,6 +1158,247 @@ export class BattleInterface {
     }
 
     /**
+     * Handle cell hover / 處理格子懸停
+     */
+    handleCellHover(row, col) {
+        if (this.battleState !== 'player_turn') return;
+        
+        this.hoveredCell = { row, col };
+        const hoveredUnit = this.units.find(u => u.row === row && u.col === col);
+        
+        // Update sidebar with terrain/unit info
+        this.updateHoverInfo(row, col, hoveredUnit);
+        
+        // Show movement range preview for ready player units on hover
+        if (hoveredUnit && hoveredUnit.isPlayer && !hoveredUnit.hasActed && !this.selectedUnit) {
+            this.showMovementPreview(hoveredUnit);
+        }
+        
+        // Show path preview when hovering over valid destination
+        if (this.selectedUnit && this.showingMoveRange && !hoveredUnit) {
+            const inRange = this.moveRange.some(p => p.row === row && p.col === col);
+            if (inRange) {
+                this.showPathPreview(this.selectedUnit.row, this.selectedUnit.col, row, col);
+            }
+        }
+        
+        // Show combat forecast when hovering over enemy in attack range
+        if (this.selectedUnit && this.showingAttackRange && hoveredUnit && !hoveredUnit.isPlayer) {
+            const inRange = this.attackRange.some(p => p.row === row && p.col === col);
+            if (inRange) {
+                this.showHoverCombatPreview(this.selectedUnit, hoveredUnit);
+            }
+        }
+    }
+    
+    /**
+     * Handle cell leave / 處理格子離開
+     */
+    handleCellLeave() {
+        this.hoveredCell = null;
+        this.clearMovementPreview();
+        this.clearPathPreview();
+        this.clearHoverCombatPreview();
+    }
+    
+    /**
+     * Update hover info in sidebar / 更新側邊欄懸停資訊
+     */
+    updateHoverInfo(row, col, unit) {
+        const infoPanel = document.getElementById('unit-info');
+        if (!infoPanel) return;
+        
+        // Only update if no unit is selected (don't override selection info)
+        if (this.selectedUnit) return;
+        
+        const terrainTile = this.terrainSystem.getTerrainAt(this.terrain, row, col);
+        const terrainData = this.terrainSystem.getTerrainData(terrainTile?.type || 'plain');
+        
+        if (unit) {
+            infoPanel.innerHTML = `
+                <div class="unit-details">
+                    <div class="unit-header">
+                        <span class="unit-icon-large">${unit.icon}</span>
+                        <h3>${unit.name}</h3>
+                    </div>
+                    <div class="unit-stats">
+                        <div class="stat-row">
+                            <span>❤️ HP:</span>
+                            <span>${unit.hp}/${unit.maxHp}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>⚔️ 攻擊:</span>
+                            <span>${unit.attack}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>🛡️ 防禦:</span>
+                            <span>${unit.defense}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>🏃 移動:</span>
+                            <span>${unit.movement}</span>
+                        </div>
+                    </div>
+                    <div class="terrain-info">
+                        <h4>地形：${terrainData.name}</h4>
+                        <p>防禦：+${terrainData.defense}</p>
+                        <p>迴避：+${terrainData.evasion}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            infoPanel.innerHTML = `
+                <div class="terrain-hover-info">
+                    <h4>地形：${terrainData.name}</h4>
+                    <p>座標：(${row}, ${col})</p>
+                    <p>防禦加成：+${terrainData.defense}</p>
+                    <p>迴避加成：+${terrainData.evasion}</p>
+                    <p>移動消耗：${terrainData.moveCost}</p>
+                </div>
+            `;
+        }
+    }
+    
+    /**
+     * Show movement preview for unit / 顯示單位移動預覽
+     */
+    showMovementPreview(unit) {
+        // Calculate and show move range without selecting
+        const tempMoveRange = this.movementSystem.calculateMoveRange(
+            unit, this.terrain, this.units, this.terrainSystem
+        );
+        
+        // Add preview class to cells
+        tempMoveRange.forEach(pos => {
+            const cell = document.querySelector(`[data-row="${pos.row}"][data-col="${pos.col}"]`);
+            if (cell) {
+                cell.classList.add('move-preview');
+            }
+        });
+    }
+    
+    /**
+     * Clear movement preview / 清除移動預覽
+     */
+    clearMovementPreview() {
+        document.querySelectorAll('.move-preview').forEach(cell => {
+            cell.classList.remove('move-preview');
+        });
+    }
+    
+    /**
+     * Show path preview / 顯示路徑預覽
+     */
+    showPathPreview(startRow, startCol, endRow, endCol) {
+        this.clearPathPreview();
+        
+        const path = this.movementSystem.findPath(
+            startRow, startCol, endRow, endCol, 
+            this.terrain, this.units, this.terrainSystem, this.selectedUnit
+        );
+        
+        if (path && path.length > 1) {
+            this.previewPath = path;
+            
+            // Highlight path cells
+            path.forEach((pos, index) => {
+                if (index === 0) return; // Skip start position
+                const cell = document.querySelector(`[data-row="${pos.row}"][data-col="${pos.col}"]`);
+                if (cell) {
+                    cell.classList.add('path-preview');
+                }
+            });
+        }
+    }
+    
+    /**
+     * Clear path preview / 清除路徑預覽
+     */
+    clearPathPreview() {
+        document.querySelectorAll('.path-preview').forEach(cell => {
+            cell.classList.remove('path-preview');
+        });
+        this.previewPath = [];
+    }
+    
+    /**
+     * Show hover combat preview / 顯示懸停戰鬥預覽
+     */
+    showHoverCombatPreview(attacker, defender) {
+        // Clear existing hover preview
+        this.clearHoverCombatPreview();
+        
+        const isBackstab = this.combatCalculator.isBackstab(
+            attacker.row, attacker.col, defender.row, defender.col, defender.facing
+        );
+        
+        const damage = this.combatCalculator.calculateDamage(
+            attacker, defender, this.terrain, this.terrainSystem, false, isBackstab
+        );
+        
+        const hitRate = this.combatCalculator.calculateHitRate(
+            attacker, defender, this.terrain, this.terrainSystem, isBackstab
+        );
+        
+        // Check if defender can counter
+        let counterDamage = 0;
+        let counterHitRate = 0;
+        const dist = Math.abs(attacker.row - defender.row) + Math.abs(attacker.col - defender.col);
+        const canCounter = dist >= (defender.attackRange?.min || 1) && dist <= (defender.attackRange?.max || 1);
+        
+        if (canCounter) {
+            counterDamage = this.combatCalculator.calculateDamage(
+                defender, attacker, this.terrain, this.terrainSystem, true, false
+            );
+            counterHitRate = this.combatCalculator.calculateHitRate(
+                defender, attacker, this.terrain, this.terrainSystem, false
+            );
+        }
+        
+        // Create floating preview
+        const defenderCell = document.querySelector(`[data-row="${defender.row}"][data-col="${defender.col}"]`);
+        if (defenderCell) {
+            const rect = defenderCell.getBoundingClientRect();
+            const preview = document.createElement('div');
+            preview.id = 'hover-combat-preview';
+            preview.className = 'hover-combat-preview';
+            preview.style.left = `${rect.right + 10}px`;
+            preview.style.top = `${rect.top}px`;
+            
+            preview.innerHTML = `
+                <div class="preview-header">戰鬥預測</div>
+                <div class="preview-attacker">
+                    <span>${attacker.icon}</span>
+                    <div class="preview-stats">
+                        <div class="stat">傷害: <span class="value damage">${damage}</span></div>
+                        <div class="stat">命中: <span class="value hit">${hitRate}%</span></div>
+                    </div>
+                </div>
+                <div class="preview-divider">VS</div>
+                <div class="preview-defender">
+                    <span>${defender.icon}</span>
+                    <div class="preview-stats">
+                        <div class="stat">傷害: <span class="value damage">${counterDamage || '-'}</span></div>
+                        <div class="stat">命中: <span class="value hit">${counterHitRate || '-'}${counterHitRate ? '%' : ''}</span></div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(preview);
+        }
+    }
+    
+    /**
+     * Clear hover combat preview / 清除懸停戰鬥預覽
+     */
+    clearHoverCombatPreview() {
+        const preview = document.getElementById('hover-combat-preview');
+        if (preview) {
+            preview.remove();
+        }
+    }
+
+    /**
      * Handle cell click / 處理格子點擊
      */
     handleCellClick(row, col) {
@@ -1173,7 +1428,13 @@ export class BattleInterface {
                 const inRange = this.moveRange.some(p => p.row === row && p.col === col);
                 if (inRange) {
                     this.moveUnit(this.selectedUnit, row, col);
+                } else {
+                    // Deselect if clicking outside movement range
+                    this.deselectUnit();
                 }
+            } else if (this.selectedUnit) {
+                // Deselect if clicking on non-interactive cell
+                this.deselectUnit();
             }
         }
     }
@@ -1182,6 +1443,14 @@ export class BattleInterface {
      * Handle cell right click / 處理格子右鍵點擊
      */
     handleCellRightClick(row, col) {
+        // If a unit has moved but not acted yet, right-click to undo
+        if (this.selectedUnit && this.lastMovePosition && !this.selectedUnit.hasActed) {
+            this.cancelLastMove(this.selectedUnit);
+            this.hideActionMenu();
+            return;
+        }
+        
+        // Otherwise, show unit info
         const unit = this.units.find(u => u.row === row && u.col === col);
         if (unit) {
             this.selectedUnit = unit;
@@ -1189,6 +1458,20 @@ export class BattleInterface {
             this.showingAttackRange = false;
             this.refreshGrid();
         }
+    }
+    
+    /**
+     * Deselect unit / 取消選擇單位
+     */
+    deselectUnit() {
+        this.selectedUnit = null;
+        this.showingMoveRange = false;
+        this.showingAttackRange = false;
+        this.moveRange = [];
+        this.attackRange = [];
+        this.clearPathPreview();
+        this.clearHoverCombatPreview();
+        this.refreshGrid();
     }
 
     /**
@@ -1379,11 +1662,44 @@ export class BattleInterface {
             </div>
         `;
         
-        // Display menu
+        // Display menu positioned near the unit
         const menuContainer = document.getElementById('battle-menu-container');
         if (menuContainer) {
             menuContainer.innerHTML = menuHtml;
-            menuContainer.style.display = 'block';
+            
+            // Position near unit's cell
+            const unitCell = document.querySelector(`[data-row="${unit.row}"][data-col="${unit.col}"]`);
+            if (unitCell) {
+                const rect = unitCell.getBoundingClientRect();
+                const grid = document.getElementById('battle-grid');
+                const gridRect = grid ? grid.getBoundingClientRect() : null;
+                
+                // Position to the right of the unit if possible, otherwise to the left
+                let left = rect.right + 10;
+                let top = rect.top;
+                
+                // Adjust if menu would go off screen
+                if (gridRect && left + 250 > gridRect.right) {
+                    left = rect.left - 260; // Position to left of unit
+                }
+                
+                // Ensure menu stays within viewport
+                if (left < 0) left = 10;
+                if (top < 0) top = 10;
+                
+                menuContainer.style.position = 'fixed';
+                menuContainer.style.left = `${left}px`;
+                menuContainer.style.top = `${top}px`;
+                menuContainer.style.transform = 'none';
+                menuContainer.style.display = 'block';
+            } else {
+                // Fallback to center if cell not found
+                menuContainer.style.position = 'fixed';
+                menuContainer.style.left = '50%';
+                menuContainer.style.top = '50%';
+                menuContainer.style.transform = 'translate(-50%, -50%)';
+                menuContainer.style.display = 'block';
+            }
             
             // Bind events
             this.bindActionMenuEvents(unit);
@@ -1967,6 +2283,11 @@ export class BattleInterface {
      * Refresh grid / 刷新格子
      */
     refreshGrid() {
+        // Clear hover states
+        this.clearMovementPreview();
+        this.clearPathPreview();
+        this.clearHoverCombatPreview();
+        
         this.render();
         this.setupEventListeners();
     }
