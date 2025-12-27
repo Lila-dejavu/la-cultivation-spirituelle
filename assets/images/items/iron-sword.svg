@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="swordBlade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e5e7eb" />
+      <stop offset="50%" style="stop-color:#d1d5db" />
+      <stop offset="100%" style="stop-color:#9ca3af" />
+    </linearGradient>
+    <linearGradient id="swordEdge" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f3f4f6;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:0" />
+    </linearGradient>
+    <radialGradient id="swordGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#4fd1c5;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#4fd1c5;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Sword glow aura -->
+  <ellipse cx="50" cy="50" rx="15" ry="55" fill="url(#swordGlow)" opacity="0.5">
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" />
+  </ellipse>
+  
+  <!-- Blade -->
+  <rect x="45" y="15" width="10" height="50" fill="url(#swordBlade)" rx="1" />
+  
+  <!-- Blade edge highlight -->
+  <rect x="49" y="15" width="2" height="50" fill="url(#swordEdge)" />
+  
+  <!-- Blade tip -->
+  <polygon points="50,10 45,15 55,15" fill="#d1d5db" />
+  
+  <!-- Guard -->
+  <rect x="35" y="62" width="30" height="6" fill="#6b5226" rx="1" />
+  <rect x="35" y="63" width="30" height="2" fill="#8b6f3a" />
+  
+  <!-- Handle -->
+  <rect x="46" y="68" width="8" height="15" fill="#3f2d1a" rx="1" />
+  
+  <!-- Handle wrap details -->
+  <line x1="46" y1="71" x2="54" y2="71" stroke="#6b5226" stroke-width="0.5" />
+  <line x1="46" y1="74" x2="54" y2="74" stroke="#6b5226" stroke-width="0.5" />
+  <line x1="46" y1="77" x2="54" y2="77" stroke="#6b5226" stroke-width="0.5" />
+  <line x1="46" y1="80" x2="54" y2="80" stroke="#6b5226" stroke-width="0.5" />
+  
+  <!-- Pommel -->
+  <circle cx="50" cy="86" r="4" fill="#6b5226" />
+  <circle cx="50" cy="86" r="2" fill="#8b6f3a" />
+  
+  <!-- Spirit energy trails -->
+  <path d="M 45 25 Q 40 30 42 35" stroke="#4fd1c5" stroke-width="1" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="d" 
+             values="M 45 25 Q 40 30 42 35;M 45 30 Q 38 35 40 40;M 45 25 Q 40 30 42 35" 
+             dur="3s" repeatCount="indefinite" />
+  </path>
+  <path d="M 55 25 Q 60 30 58 35" stroke="#4fd1c5" stroke-width="1" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="d" 
+             values="M 55 25 Q 60 30 58 35;M 55 30 Q 62 35 60 40;M 55 25 Q 60 30 58 35" 
+             dur="3s" repeatCount="indefinite" />
+  </path>
+</svg>

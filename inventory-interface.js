@@ -4,6 +4,8 @@
  * 管理背包和物品
  */
 
+import imageManager from './image-manager.js';
+
 export class InventoryInterface {
     constructor(uiManager) {
         this.uiManager = uiManager;
@@ -132,9 +134,28 @@ export class InventoryInterface {
     /**
      * Get item icon / 獲取物品圖示
      * @param {string} itemId - Item ID
-     * @returns {string} Icon emoji
+     * @returns {string} Icon HTML or emoji
      */
     getItemIcon(itemId) {
+        // Try to get image path
+        const imagePath = imageManager.getImagePath('items', itemId);
+        
+        if (imagePath) {
+            // Return img tag with fallback
+            return `<img src="${imagePath}" alt="${itemId}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                    <span style="display:none;">${this.getItemEmoji(itemId)}</span>`;
+        }
+        
+        // Fallback to emoji
+        return this.getItemEmoji(itemId);
+    }
+    
+    /**
+     * Get item emoji fallback / 獲取物品表情符號
+     * @param {string} itemId - Item ID
+     * @returns {string} Icon emoji
+     */
+    getItemEmoji(itemId) {
         const icons = {
             healing_pill_low: '🔴',
             mana_pill_low: '🔵',
@@ -377,6 +398,23 @@ style.textContent = `
     .item-icon {
         font-size: 3rem;
         margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+        min-height: 60px;
+        position: relative;
+    }
+    
+    .item-icon img,
+    .item-icon svg {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    .item-icon span {
+        font-size: 3rem;
     }
     
     .item-name {

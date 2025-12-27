@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <radialGradient id="cultivatorGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#4fd1c5;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#38b2ac;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#2c7a7b;stop-opacity:0.2" />
+    </radialGradient>
+    <radialGradient id="spiritAura" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Outer glow -->
+  <circle cx="50" cy="50" r="48" fill="url(#cultivatorGlow)" opacity="0.3" />
+  
+  <!-- Main circle -->
+  <circle cx="50" cy="50" r="40" fill="#2c7a7b" stroke="#4fd1c5" stroke-width="2" />
+  
+  <!-- Inner aura -->
+  <circle cx="50" cy="50" r="35" fill="url(#spiritAura)" />
+  
+  <!-- Head silhouette -->
+  <circle cx="50" cy="35" r="12" fill="#1a202c" />
+  
+  <!-- Body silhouette -->
+  <ellipse cx="50" cy="60" rx="15" ry="20" fill="#1a202c" />
+  
+  <!-- Robe details -->
+  <path d="M 35 55 Q 50 50 65 55 L 65 75 Q 50 70 35 75 Z" fill="#2d3748" opacity="0.6" />
+  
+  <!-- Energy particles -->
+  <circle cx="30" cy="30" r="2" fill="#fbbf24" opacity="0.8">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="70" cy="40" r="2" fill="#fbbf24" opacity="0.8">
+    <animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="50" cy="20" r="2" fill="#4fd1c5" opacity="0.8">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite" />
+  </circle>
+</svg>
