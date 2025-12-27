@@ -14,6 +14,7 @@ export const ENEMIES_DATA = {
             id: 'spirit_wolf',
             name: '靈狼',
             icon: '🐺',
+            iconId: 'spirit_wolf', // For image lookup
             chapter: 1,
             type: 'infantry',
             stats: {
@@ -33,6 +34,7 @@ export const ENEMIES_DATA = {
             id: 'wolf_alpha',
             name: '靈狼首領',
             icon: '🐺',
+            iconId: 'spirit_wolf', // Reuse same wolf icon
             chapter: 1,
             type: 'infantry',
             stats: {
