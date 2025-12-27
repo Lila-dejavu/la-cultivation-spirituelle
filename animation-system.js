@@ -10,6 +10,9 @@ export class AnimationSystem {
         this.animations = new Map();
         this.canvas = null;
         this.ctx = null;
+        this.particlePool = []; // Particle object pooling
+        this.maxPoolSize = 200;
+        this.isAnimating = false;
     }
 
     /**
@@ -31,7 +34,38 @@ export class AnimationSystem {
         container.style.position = 'relative';
         container.appendChild(this.canvas);
         
-        this.ctx = this.canvas.getContext('2d');
+        // Optimize canvas context
+        this.ctx = this.canvas.getContext('2d', {
+            alpha: true,
+            desynchronized: true, // Reduce latency
+            willReadFrequently: false
+        });
+    }
+
+    /**
+     * Get particle from pool or create new one / 從池中獲取粒子或創建新粒子
+     * @param {Object} config - Particle configuration
+     * @returns {Object} Particle object
+     */
+    getParticleFromPool(config) {
+        let particle;
+        if (this.particlePool.length > 0) {
+            particle = this.particlePool.pop();
+            Object.assign(particle, config);
+        } else {
+            particle = { ...config };
+        }
+        return particle;
+    }
+
+    /**
+     * Return particle to pool / 將粒子返回池中
+     * @param {Object} particle - Particle to return
+     */
+    returnParticleToPool(particle) {
+        if (this.particlePool.length < this.maxPoolSize) {
+            this.particlePool.push(particle);
+        }
     }
 
     /**
@@ -56,7 +90,7 @@ export class AnimationSystem {
                 y: Math.sin(angle) * speed - 1
             };
 
-            this.particles.push({
+            this.particles.push(this.getParticleFromPool({
                 x,
                 y,
                 vx: velocity.x,
@@ -66,7 +100,7 @@ export class AnimationSystem {
                 alpha: 1,
                 lifetime,
                 age: 0
-            });
+            }));
         }
     }
 
@@ -116,7 +150,7 @@ export class AnimationSystem {
                 const x = rect.left + Math.random() * rect.width;
                 const y = rect.bottom;
                 
-                this.particles.push({
+                this.particles.push(this.getParticleFromPool({
                     x,
                     y,
                     vx: (Math.random() - 0.5) * 2,
@@ -126,7 +160,7 @@ export class AnimationSystem {
                     alpha: 1,
                     lifetime: 2000,
                     age: 0
-                });
+                }));
             }, i * 20);
         }
 
@@ -196,7 +230,7 @@ export class AnimationSystem {
             projectile.y += (dy / distance) * projectile.speed;
 
             // Create trail particles
-            this.particles.push({
+            this.particles.push(this.getParticleFromPool({
                 x: projectile.x,
                 y: projectile.y,
                 vx: 0,
@@ -206,7 +240,7 @@ export class AnimationSystem {
                 alpha: 0.8,
                 lifetime: 300,
                 age: 0
-            });
+            }));
 
             requestAnimationFrame(animate);
         };
@@ -219,13 +253,16 @@ export class AnimationSystem {
      * @param {number} deltaTime - Time since last update
      */
     updateParticles(deltaTime) {
-        if (!this.ctx) return;
+        if (!this.ctx || this.particles.length === 0) return;
 
-        // Clear canvas
+        // Clear canvas only if there are particles
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Update particles
-        this.particles = this.particles.filter(particle => {
+        // Batch rendering for better performance
+        const particlesToRemove = [];
+        
+        for (let i = 0; i < this.particles.length; i++) {
+            const particle = this.particles[i];
             particle.age += deltaTime;
 
             // Update position
@@ -240,18 +277,25 @@ export class AnimationSystem {
 
             // Remove dead particles
             if (particle.age >= particle.lifetime) {
-                return false;
+                particlesToRemove.push(i);
+                continue;
             }
 
-            // Draw particle
+            // Draw particle with batched operations
             this.ctx.globalAlpha = particle.alpha;
             this.ctx.fillStyle = particle.color;
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
             this.ctx.fill();
+        }
 
-            return true;
-        });
+        // Remove dead particles and return to pool (iterate backwards)
+        for (let i = particlesToRemove.length - 1; i >= 0; i--) {
+            const idx = particlesToRemove[i];
+            const particle = this.particles[idx];
+            this.returnParticleToPool(particle);
+            this.particles.splice(idx, 1);
+        }
 
         this.ctx.globalAlpha = 1;
     }
@@ -260,19 +304,34 @@ export class AnimationSystem {
      * Start animation loop / 開始動畫循環
      */
     startAnimationLoop() {
+        if (this.isAnimating) return; // Prevent multiple loops
+        
+        this.isAnimating = true;
         let lastTime = Date.now();
 
         const loop = () => {
+            if (!this.isAnimating) return;
+            
             const currentTime = Date.now();
             const deltaTime = currentTime - lastTime;
             lastTime = currentTime;
 
-            this.updateParticles(deltaTime);
+            // Only update if there are particles
+            if (this.particles.length > 0) {
+                this.updateParticles(deltaTime);
+            }
 
             requestAnimationFrame(loop);
         };
 
         loop();
+    }
+
+    /**
+     * Stop animation loop / 停止動畫循環
+     */
+    stopAnimationLoop() {
+        this.isAnimating = false;
     }
 
     /**

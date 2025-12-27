@@ -1,0 +1,299 @@
+/**
+ * Graphics Optimization CSS - 圖形優化CSS
+ * Performance enhancements for animations and rendering
+ * 動畫和渲染的性能增強
+ */
+
+/* ========== Hardware Acceleration & Performance ========== */
+
+/* Enable GPU acceleration for animations */
+.menu-background,
+.spiritual-particles,
+.loading-progress,
+.stat-bar-fill,
+.avatar-frame,
+.particle-effect {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Optimize animated elements */
+[class*="anim-"],
+[class*="fade-"],
+.pulse,
+.glow,
+.shake {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Optimize scrollable containers */
+.panel-container,
+.inventory-grid,
+.skill-list {
+    contain: layout style paint;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Optimize canvas elements */
+canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0);
+}
+
+/* Reduce layout thrashing */
+.grid-cell,
+.inventory-item,
+.skill-card {
+    contain: layout;
+}
+
+/* ========== CSS Containment ========== */
+
+/* Isolate independent components */
+.character-info,
+.resources,
+.sidebar-btn,
+.menu-btn {
+    contain: layout style;
+}
+
+/* Optimize list rendering */
+.unit-list,
+.enemy-list,
+.item-grid {
+    contain: layout style;
+}
+
+.unit-item,
+.enemy-card,
+.item-card {
+    contain: layout;
+}
+
+/* ========== Transition Optimizations ========== */
+
+/* Use transform instead of position for animations */
+.slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-out {
+    animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%) translateZ(0);
+    }
+    to {
+        transform: translateX(0) translateZ(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0) translateZ(0);
+    }
+    to {
+        transform: translateX(-100%) translateZ(0);
+    }
+}
+
+/* Fade optimizations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ========== Particle Effects Optimization ========== */
+
+.particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    contain: strict;
+    will-change: contents;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+/* ========== Image Optimization ========== */
+
+/* Optimize image rendering */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Lazy loading optimization */
+img[loading="lazy"] {
+    content-visibility: auto;
+}
+
+/* ========== Gradient Optimizations ========== */
+
+/* Optimize gradient backgrounds */
+.menu-background,
+.battle-background {
+    background-attachment: fixed;
+    background-size: 200% 200%;
+    will-change: background-position;
+}
+
+/* ========== Shadow Optimizations ========== */
+
+/* Use filter for performance-critical shadows */
+.glow-effect {
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.soft-shadow {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ========== Grid Layout Optimizations ========== */
+
+.battle-grid,
+.inventory-grid {
+    display: grid;
+    contain: layout style;
+}
+
+/* Optimize grid cells */
+.grid-cell {
+    contain: layout style paint;
+    transform: translateZ(0);
+}
+
+/* ========== Scroll Performance ========== */
+
+/* Smooth scrolling with hardware acceleration */
+.scrollable {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    will-change: scroll-position;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========== Visibility Optimizations ========== */
+
+/* Content visibility for offscreen content */
+.panel:not(.active) {
+    content-visibility: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========== Blend Mode Optimizations ========== */
+
+/* Use CSS blend modes instead of canvas operations when possible */
+.blend-multiply {
+    mix-blend-mode: multiply;
+}
+
+.blend-screen {
+    mix-blend-mode: screen;
+}
+
+.blend-overlay {
+    mix-blend-mode: overlay;
+}
+
+/* ========== Responsive Optimizations ========== */
+
+/* Reduce animations on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Optimize for touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .hover-effect {
+        transition: none;
+    }
+}
+
+/* ========== Print Optimizations ========== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ========== Performance Hints ========== */
+
+/* Hint browser about upcoming changes */
+.will-animate {
+    will-change: transform, opacity;
+}
+
+.will-scroll {
+    will-change: scroll-position;
+}
+
+/* Remove will-change after animation */
+.animated {
+    will-change: auto;
+}
