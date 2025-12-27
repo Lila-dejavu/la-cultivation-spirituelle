@@ -9,6 +9,7 @@ import { createAllyInstance } from './src/data/allies-data.js';
 import DialogueSystem from './src/systems/dialogue-system.js';
 import StorySystem from './src/systems/story-system.js';
 import AllySystem from './src/systems/ally-system.js';
+import imageManager from './image-manager.js';
 
 /**
  * Terrain System - 地形系統
@@ -612,7 +613,7 @@ export class BattleInterface {
                 if (unit) {
                     const unitClass = unit.isPlayer ? 'player' : 'enemy';
                     const actedClass = unit.hasActed ? 'acted' : '';
-                    content = `<div class="grid-unit ${unitClass} ${actedClass}">${unit.icon}</div>`;
+                    content = `<div class="grid-unit ${unitClass} ${actedClass}">${this.getUnitIconHTML(unit)}</div>`;
                 }
                 
                 html += `
@@ -627,6 +628,27 @@ export class BattleInterface {
             }
         }
         return html;
+    }
+    
+    /**
+     * Get unit icon HTML / 獲取單位圖標 HTML
+     * @param {Object} unit - Unit data
+     * @returns {string} HTML string
+     */
+    getUnitIconHTML(unit) {
+        // Try to get image path based on unit type
+        let imagePath = null;
+        
+        if (unit.isPlayer) {
+            imagePath = imageManager.getImagePath('characters', 'cultivator_default');
+        } else {
+            // For enemies, try to match name or use iconId property
+            const enemyKey = unit.iconId || unit.name === '靈狼' ? 'spirit_wolf' : unit.name.toLowerCase().replace(/\s/g, '_');
+            imagePath = imageManager.getImagePath('enemies', enemyKey);
+        }
+        
+        // Use helper method to create image HTML with fallback
+        return imageManager.createImageHTML(imagePath, unit.name, unit.icon, 'unit-image');
     }
 
     /**

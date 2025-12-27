@@ -1,0 +1,19 @@
+{
+  "characters": {
+    "default": "assets/images/characters/cultivator-default.svg",
+    "cultivator_default": "assets/images/characters/cultivator-default.svg"
+  },
+  "enemies": {
+    "spirit_wolf": "assets/images/enemies/spirit-wolf.svg",
+    "靈狼": "assets/images/enemies/spirit-wolf.svg"
+  },
+  "items": {
+    "healing_pill_low": "assets/images/items/red-pill.svg",
+    "mana_pill_low": "assets/images/items/blue-pill.svg",
+    "iron_sword": "assets/images/items/iron-sword.svg",
+    "spirit_stone_low": "assets/images/items/spirit-stone.svg"
+  },
+  "skills": {},
+  "ui": {},
+  "backgrounds": {}
+}

@@ -103,7 +103,9 @@
         <div class="hud-top">
             <div class="character-info">
                 <div class="character-avatar">
-                    <div class="avatar-frame">🧙</div>
+                    <div class="avatar-frame" id="character-avatar-frame">
+                        <img src="assets/images/characters/cultivator-default.svg" alt="修仙者" onerror="this.style.display='none'; this.parentElement.classList.add('use-css-fallback');" />
+                    </div>
                 </div>
                 <div class="character-stats">
                     <h3 id="hud-character-name">林逸</h3>
