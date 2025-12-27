@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphics Optimization Test</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="graphics-optimization.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0e1a;
+            color: #e5e7eb;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #141824;
+            border-radius: 8px;
+        }
+        .particle-canvas {
+            width: 400px;
+            height: 300px;
+            background: #1a1f2e;
+            border: 2px solid #4fd1c5;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4fd1c5;
+            color: #0a0e1a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .test-button:hover {
+            background: #38b2ac;
+        }
+        .stat-display {
+            padding: 10px;
+            background: #1a1f2e;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Graphics Optimization Test - 圖形優化測試</h1>
+        
+        <!-- Animation System Test -->
+        <div class="test-section">
+            <h2>Animation System - 動畫系統</h2>
+            <div id="particle-container" class="particle-canvas"></div>
+            <button class="test-button" id="btn-spiritual">Spiritual Particles</button>
+            <button class="test-button" id="btn-burst">Burst Effect</button>
+            <button class="test-button" id="btn-clear">Clear Particles</button>
+            <div class="stat-display" id="particle-stats">Particles: 0 | Pool Size: 0</div>
+        </div>
+
+        <!-- Performance Monitor Test -->
+        <div class="test-section">
+            <h2>Performance Monitor - 性能監控</h2>
+            <button class="test-button" id="btn-start-monitor">Start Monitor</button>
+            <button class="test-button" id="btn-stop-monitor">Stop Monitor</button>
+            <div class="stat-display" id="perf-stats">
+                FPS: -- | Frame Time: -- | Memory: --
+            </div>
+        </div>
+
+        <!-- CSS Optimization Test -->
+        <div class="test-section">
+            <h2>CSS Optimization - CSS優化</h2>
+            <div class="menu-btn" id="test-btn" style="max-width: 300px; margin: 10px 0;">
+                Test Button (Hover Me)
+            </div>
+            <div style="width: 300px; height: 20px; background: #1a1f2e; border-radius: 4px; overflow: hidden; margin: 10px 0;">
+                <div class="stat-bar-fill" id="test-bar" style="width: 50%; background: linear-gradient(90deg, #4fd1c5, #38b2ac);"></div>
+            </div>
+            <button class="test-button" id="btn-animate-bar">Animate Bar</button>
+        </div>
+
+        <!-- Image Asset Manager Test -->
+        <div class="test-section">
+            <h2>Image Asset Manager - 圖像資源管理</h2>
+            <button class="test-button" id="btn-test-offscreen">Test Offscreen Canvas</button>
+            <canvas id="test-canvas" width="200" height="200" style="border: 2px solid #4fd1c5; background: #1a1f2e; border-radius: 4px;"></canvas>
+            <div class="stat-display" id="asset-stats">Cache Size: 0</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import AnimationSystem from './animation-system.js';
+        import ImageAssetManager from './image-asset-manager.js';
+        import PerformanceMonitor from './performance-monitor.js';
+
+        // Initialize systems
+        const animationSystem = new AnimationSystem();
+        const assetManager = new ImageAssetManager();
+        const perfMonitor = new PerformanceMonitor();
+
+        // Setup animation system
+        animationSystem.initializeCanvas('particle-container');
+        animationSystem.startAnimationLoop();
+
+        // Update particle stats
+        function updateParticleStats() {
+            const stats = document.getElementById('particle-stats');
+            stats.textContent = `Particles: ${animationSystem.particles.length} | Pool Size: ${animationSystem.particlePool.length}`;
+        }
+
+        setInterval(updateParticleStats, 100);
+
+        // Spiritual particles button
+        document.getElementById('btn-spiritual').addEventListener('click', () => {
+            const container = document.getElementById('particle-container');
+            const rect = container.getBoundingClientRect();
+            animationSystem.createSpiritualParticles(
+                rect.width / 2,
+                rect.height / 2,
+                { count: 30, color: '#4fd1c5', speed: 3 }
+            );
+        });
+
+        // Burst effect button
+        document.getElementById('btn-burst').addEventListener('click', () => {
+            const container = document.getElementById('particle-container');
+            const rect = container.getBoundingClientRect();
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    animationSystem.createSpiritualParticles(
+                        Math.random() * rect.width,
+                        Math.random() * rect.height,
+                        { count: 20, color: '#fbbf24', speed: 2 }
+                    );
+                }, i * 100);
+            }
+        });
+
+        // Clear particles button
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            animationSystem.particles = [];
+        });
+
+        // Performance monitor buttons
+        document.getElementById('btn-start-monitor').addEventListener('click', () => {
+            perfMonitor.start(false);
+            updatePerfStats();
+        });
+
+        document.getElementById('btn-stop-monitor').addEventListener('click', () => {
+            perfMonitor.stop();
+        });
+
+        function updatePerfStats() {
+            if (!perfMonitor.isMonitoring) return;
+            
+            const metrics = perfMonitor.getMetrics();
+            const stats = document.getElementById('perf-stats');
+            let text = `FPS: ${perfMonitor.getFPS()} | Frame Time: ${metrics.frameTime.toFixed(2)}ms`;
+            
+            if (performance.memory) {
+                const memMB = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
+                text += ` | Memory: ${memMB}MB`;
+            }
+            
+            stats.textContent = text;
+            
+            if (perfMonitor.isMonitoring) {
+                setTimeout(updatePerfStats, 500);
+            }
+        }
+
+        // Animate bar button
+        document.getElementById('btn-animate-bar').addEventListener('click', () => {
+            const bar = document.getElementById('test-bar');
+            const currentWidth = parseInt(bar.style.width);
+            const newWidth = currentWidth >= 100 ? 0 : 100;
+            bar.style.width = newWidth + '%';
+        });
+
+        // Test offscreen canvas
+        document.getElementById('btn-test-offscreen').addEventListener('click', () => {
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Create offscreen canvas
+            const { canvas: offscreen, ctx: offscreenCtx } = assetManager.createOffscreenCanvas(200, 200);
+            
+            // Draw on offscreen canvas
+            offscreenCtx.fillStyle = '#4fd1c5';
+            offscreenCtx.fillRect(0, 0, 200, 200);
+            offscreenCtx.fillStyle = '#fbbf24';
+            offscreenCtx.beginPath();
+            offscreenCtx.arc(100, 100, 50, 0, Math.PI * 2);
+            offscreenCtx.fill();
+            
+            offscreenCtx.fillStyle = '#fff';
+            offscreenCtx.font = '16px sans-serif';
+            offscreenCtx.textAlign = 'center';
+            offscreenCtx.fillText('Offscreen Canvas', 100, 105);
+            
+            // Copy to main canvas
+            ctx.clearRect(0, 0, 200, 200);
+            ctx.drawImage(offscreen, 0, 0);
+            
+            // Update stats
+            document.getElementById('asset-stats').textContent = `Cache Size: ${assetManager.getCacheSize()} | Test: Success`;
+        });
+
+        console.log('Graphics optimization test initialized');
+        console.log('AnimationSystem:', animationSystem);
+        console.log('ImageAssetManager:', assetManager);
+        console.log('PerformanceMonitor:', perfMonitor);
+    </script>
+</body>
+</html>
